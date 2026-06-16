@@ -1,6 +1,7 @@
 // Import Express
 const express = require("express");
 const db = require("./database");
+const cors = require("cors");
 
 // Create Express app
 const app = express();
@@ -10,6 +11,7 @@ const PORT = 5050;
 
 // Allows Express to read JSON data
 app.use(express.json());
+app.use(cors());
 
 /*
 |--------------------------------------------------------------------------
