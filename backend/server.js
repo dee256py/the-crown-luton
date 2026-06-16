@@ -92,6 +92,80 @@ app.get("/bookings", (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
+| DELETE BOOKING
+|--------------------------------------------------------------------------
+| Deletes one booking using its ID
+|--------------------------------------------------------------------------
+*/
+app.delete("/bookings/:id", (req, res) => {
+  const bookingId = req.params.id;
+
+  const sql = "DELETE FROM bookings WHERE id = ?";
+
+  db.run(sql, [bookingId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        error: "Booking could not be deleted"
+      });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({
+        error: "Booking not found"
+      });
+    }
+
+    res.json({
+      message: "Booking deleted successfully",
+      deletedBookingId: bookingId
+    });
+  });
+});
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE BOOKING
+|--------------------------------------------------------------------------
+| Updates one booking using its ID
+|--------------------------------------------------------------------------
+*/
+app.put("/bookings/:id", (req, res) => {
+  const bookingId = req.params.id;
+
+  const { name, email, phone, eventType, eventDate, guestCount, notes } = req.body;
+
+  const sql = `
+    UPDATE bookings
+    SET name = ?, email = ?, phone = ?, eventType = ?, eventDate = ?, guestCount = ?, notes = ?
+    WHERE id = ?
+  `;
+
+  db.run(
+    sql,
+    [name, email, phone, eventType, eventDate, guestCount, notes, bookingId],
+    function (err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Booking could not be updated"
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: "Booking not found"
+        });
+      }
+
+      res.json({
+        message: "Booking updated successfully",
+        updatedBookingId: bookingId
+      });
+    }
+  );
+});
+
+/*
+|--------------------------------------------------------------------------
 | START SERVER
 |--------------------------------------------------------------------------
 */
