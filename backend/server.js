@@ -1,13 +1,12 @@
 // Import Express
 const express = require("express");
+const db = require("./database");
 
 // Create Express app
 const app = express();
 
 // Backend port
 const PORT = 5050;
-// Temporary booking storage
-const bookings = [];
 
 // Allows Express to read JSON data
 app.use(express.json());
@@ -56,19 +55,23 @@ app.get("/events", (req, res) => {
 |--------------------------------------------------------------------------
 */
 app.post("/bookings", (req, res) => {
+  const { name, email, phone, eventType, eventDate, guestCount, notes } = req.body;
 
-  const booking = req.body;
+  const sql = `
+    INSERT INTO bookings (name, email, phone, eventType, eventDate, guestCount, notes)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
 
-  bookings.push(booking);
+  db.run(sql, [name, email, phone, eventType, eventDate, guestCount, notes], function (err) {
+    if (err) {
+      return res.status(500).json({ error: "Booking could not be saved" });
+    }
 
-  console.log("Booking received:");
-  console.log(booking);
-
-  res.status(201).json({
-    message: "Booking received successfully",
-    booking: booking
+    res.status(201).json({
+      message: "Booking saved successfully",
+      bookingId: this.lastID
+    });
   });
-
 });
 
 /*
@@ -78,7 +81,13 @@ app.post("/bookings", (req, res) => {
 */
 
 app.get("/bookings", (req, res) => {
-  res.json(bookings);
+  db.all("SELECT * FROM bookings ORDER BY createdAt DESC", [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: "Bookings could not be loaded" });
+    }
+
+    res.json(rows);
+  });
 });
 
 /*
