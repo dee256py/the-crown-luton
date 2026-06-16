@@ -6,6 +6,8 @@ const app = express();
 
 // Backend port
 const PORT = 5050;
+// Temporary booking storage
+const bookings = [];
 
 // Allows Express to read JSON data
 app.use(express.json());
@@ -55,14 +57,28 @@ app.get("/events", (req, res) => {
 */
 app.post("/bookings", (req, res) => {
 
-  console.log("Booking received:");
-  console.log(req.body);
+  const booking = req.body;
 
-  res.json({
+  bookings.push(booking);
+
+  console.log("Booking received:");
+  console.log(booking);
+
+  res.status(201).json({
     message: "Booking received successfully",
-    booking: req.body
+    booking: booking
   });
 
+});
+
+/*
+|--------------------------------------------------------------------------
+| GET ALL BOOKINGS
+|--------------------------------------------------------------------------
+*/
+
+app.get("/bookings", (req, res) => {
+  res.json(bookings);
 });
 
 /*
