@@ -178,6 +178,141 @@ app.delete("/bookings/:id", (req, res) => {
   });
 });
 
+app.post("/performers", (req, res) => {
+  const {
+    stageName,
+    realName,
+    email,
+    phone,
+    genre,
+    socialLink,
+    preferredDate,
+    equipmentNeeds,
+    bio
+  } = req.body;
+
+  const sql = `
+    INSERT INTO performer_applications
+    (stageName, realName, email, phone, genre, socialLink, preferredDate, equipmentNeeds, bio)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.run(
+    sql,
+    [
+      stageName,
+      realName,
+      email,
+      phone,
+      genre,
+      socialLink,
+      preferredDate,
+      equipmentNeeds,
+      bio
+    ],
+    function (err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Performer application could not be saved"
+        });
+      }
+
+      res.status(201).json({
+        message: "Performer application saved successfully",
+        performerId: this.lastID
+      });
+    }
+  );
+});
+
+app.get("/performers", (req, res) => {
+  db.all(
+    "SELECT * FROM performer_applications ORDER BY createdAt DESC",
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Performer applications could not be loaded"
+        });
+      }
+
+      res.json(rows);
+    }
+  );
+});
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE PERFORMER STATUS
+|--------------------------------------------------------------------------
+*/
+app.put("/performers/:id/status", (req, res) => {
+  const performerId = req.params.id;
+  const { status } = req.body;
+
+  const sql = `
+    UPDATE performer_applications
+    SET status = ?
+    WHERE id = ?
+  `;
+
+  db.run(sql, [status, performerId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        error: "Performer status could not be updated"
+      });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({
+        error: "Performer application not found"
+      });
+    }
+
+    res.json({
+      message: "Performer status updated successfully",
+      performerId,
+      status
+    });
+  });
+});
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE PERFORMER STATUS
+|--------------------------------------------------------------------------
+*/
+app.put("/performers/:id/status", (req, res) => {
+  const performerId = req.params.id;
+  const { status } = req.body;
+
+  const sql = `
+    UPDATE performer_applications
+    SET status = ?
+    WHERE id = ?
+  `;
+
+  db.run(sql, [status, performerId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        error: "Performer status could not be updated"
+      });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({
+        error: "Performer application not found"
+      });
+    }
+
+    res.json({
+      message: "Performer status updated successfully",
+      performerId,
+      status
+    });
+  });
+});
+
 /*
 |--------------------------------------------------------------------------
 | START SERVER
