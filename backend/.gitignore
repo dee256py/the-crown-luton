@@ -3,9 +3,19 @@ node_modules/
 
 # Environment variables
 .env
+backend/.env
+frontend/.env
+
+# Local database files
+*.db
+backend/*.db
 
 # Logs
 *.log
 
 # macOS files
 .DS_Store
+
+# Build files
+dist/
+build/

@@ -548,3 +548,112 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.admin-list-spacing {
+  margin-top: 50px;
+}
+
+.admin-stats-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.admin-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 35px;
+}
+
+.secondary-btn {
+  border: 1px solid rgba(255, 215, 128, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f7e2a0;
+  padding: 12px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 215, 128, 0.12);
+  transform: translateY(-2px);
+}
+
+.admin-login-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 45px;
+  border-radius: 28px;
+  background: rgba(12, 12, 14, 0.88);
+  border: 1px solid rgba(255, 215, 128, 0.2);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+}
+
+.admin-demo-note {
+  margin-top: 22px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.95rem;
+}
+
+@media (max-width: 1100px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-header-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 650px) {
+  .admin-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-login-card {
+    padding: 28px;
+  }
+}
+
+.admin-login-card {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 45px;
+  border-radius: 28px;
+  background: rgba(12, 12, 14, 0.88);
+  border: 1px solid rgba(255, 215, 128, 0.2);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.35);
+}
+
+.admin-demo-note {
+  margin-top: 22px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.95rem;
+}
+
+.admin-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  margin-bottom: 35px;
+}
+
+.secondary-btn {
+  border: 1px solid rgba(255, 215, 128, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f7e2a0;
+  padding: 12px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background: rgba(255, 215, 128, 0.12);
+  transform: translateY(-2px);
+}

@@ -1,38 +1,54 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { apiFetch, removeAdminToken } from "../../api";
 
 function AdminHome() {
+  const navigate = useNavigate();
+
   const [bookings, setBookings] = useState([]);
   const [performers, setPerformers] = useState([]);
   const [events, setEvents] = useState([]);
   const [contacts, setContacts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5050/bookings")
-      .then((res) => res.json())
-      .then((data) => setBookings(data));
+    apiFetch("/bookings")
+      .then((data) => setBookings(data))
+      .catch((err) => console.error(err));
 
-    fetch("http://localhost:5050/performers")
-      .then((res) => res.json())
-      .then((data) => setPerformers(data));
+    apiFetch("/performers")
+      .then((data) => setPerformers(data))
+      .catch((err) => console.error(err));
 
-    fetch("http://localhost:5050/events")
-      .then((res) => res.json())
-      .then((data) => setEvents(data));
+    apiFetch("/events")
+      .then((data) => setEvents(data))
+      .catch((err) => console.error(err));
 
-    fetch("http://localhost:5050/contact")
-      .then((res) => res.json())
-      .then((data) => setContacts(data));
+    apiFetch("/contact")
+      .then((data) => setContacts(data))
+      .catch((err) => console.error(err));
   }, []);
 
   const pendingPerformers = performers.filter(
     (performer) => performer.status === "Pending" || !performer.status
   );
 
+  function handleLogout() {
+    removeAdminToken();
+    navigate("/admin/login");
+  }
+
   return (
     <section className="admin-page">
-      <p className="eyebrow">MANAGER DASHBOARD</p>
-      <h1>Admin Control Centre</h1>
+      <div className="admin-header-row">
+        <div>
+          <p className="eyebrow">MANAGER DASHBOARD</p>
+          <h1>Admin Control Centre</h1>
+        </div>
+
+        <button className="secondary-btn" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
 
       <div className="admin-stats-grid">
         <div className="admin-stat-card">

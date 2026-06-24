@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../../api";
 
 function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -13,8 +14,7 @@ function AdminEvents() {
   });
 
   function loadEvents() {
-    fetch("http://localhost:5050/events")
-      .then((res) => res.json())
+    apiFetch("/events")
       .then((data) => setEvents(data))
       .catch((err) => console.error(err));
   }
@@ -46,20 +46,13 @@ function AdminEvents() {
   function handleSubmit(e) {
     e.preventDefault();
 
-    const url = editingEventId
-      ? `http://localhost:5050/events/${editingEventId}`
-      : "http://localhost:5050/events";
-
+    const url = editingEventId ? `/events/${editingEventId}` : "/events";
     const method = editingEventId ? "PUT" : "POST";
 
-    fetch(url, {
+    apiFetch(url, {
       method,
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify(formData)
     })
-      .then((res) => res.json())
       .then(() => {
         setMessage(
           editingEventId
@@ -90,10 +83,15 @@ function AdminEvents() {
   }
 
   function deleteEvent(id) {
-    fetch(`http://localhost:5050/events/${id}`, {
+    const confirmed = window.confirm("Are you sure you want to delete this event?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    apiFetch(`/events/${id}`, {
       method: "DELETE"
     })
-      .then((res) => res.json())
       .then(() => {
         setMessage("Event deleted successfully!");
         loadEvents();

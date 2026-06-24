@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../../api";
 
 function AdminPerformers() {
   const [performers, setPerformers] = useState([]);
   const [message, setMessage] = useState("");
 
   function loadPerformers() {
-    fetch("http://localhost:5050/performers")
-      .then((res) => res.json())
+    apiFetch("/performers")
       .then((data) => setPerformers(data))
-      .catch((err) => console.error("Error loading performers:", err));
+      .catch((err) => console.error(err));
   }
 
   useEffect(() => {
@@ -16,24 +16,41 @@ function AdminPerformers() {
   }, []);
 
   function updateStatus(performerId, newStatus) {
-    fetch(`http://localhost:5050/performers/${performerId}/status`, {
+    apiFetch(`/performers/${performerId}/status`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({
         status: newStatus
       })
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
+      .then(() => {
         setMessage(`Performer marked as ${newStatus}`);
         loadPerformers();
       })
       .catch((err) => {
-        console.error("Error updating performer status:", err);
+        console.error(err);
         setMessage("Could not update performer status.");
+      });
+  }
+
+  function deletePerformer(performerId) {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this performer application?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    apiFetch(`/performers/${performerId}`, {
+      method: "DELETE"
+    })
+      .then(() => {
+        setMessage("Performer application deleted successfully!");
+        loadPerformers();
+      })
+      .catch((err) => {
+        console.error(err);
+        setMessage("Could not delete performer application.");
       });
   }
 
@@ -74,6 +91,10 @@ function AdminPerformers() {
             </p>
 
             <p>
+              <strong>Social Link:</strong> {performer.socialLink || "Not provided"}
+            </p>
+
+            <p>
               <strong>Equipment:</strong> {performer.equipmentNeeds}
             </p>
 
@@ -92,10 +113,26 @@ function AdminPerformers() {
 
               <button
                 type="button"
+                className="secondary-btn"
+                onClick={() => updateStatus(performer.id, "Pending")}
+              >
+                Pending
+              </button>
+
+              <button
+                type="button"
                 className="reject-btn"
                 onClick={() => updateStatus(performer.id, "Rejected")}
               >
                 Reject
+              </button>
+
+              <button
+                type="button"
+                className="reject-btn"
+                onClick={() => deletePerformer(performer.id)}
+              >
+                Delete
               </button>
             </div>
           </div>

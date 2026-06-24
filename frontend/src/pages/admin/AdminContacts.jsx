@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
+import { apiFetch } from "../../api";
 
 function AdminContacts() {
   const [contacts, setContacts] = useState([]);
   const [message, setMessage] = useState("");
 
   function loadContacts() {
-    fetch("http://localhost:5050/contact")
-      .then((res) => res.json())
+    apiFetch("/contact")
       .then((data) => setContacts(data))
       .catch((err) => console.error(err));
   }
@@ -16,10 +16,17 @@ function AdminContacts() {
   }, []);
 
   function deleteContact(id) {
-    fetch(`http://localhost:5050/contact/${id}`, {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this contact message?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    apiFetch(`/contact/${id}`, {
       method: "DELETE"
     })
-      .then((res) => res.json())
       .then(() => {
         setMessage("Message deleted successfully!");
         loadContacts();

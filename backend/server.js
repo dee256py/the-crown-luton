@@ -1,7 +1,12 @@
 // Import packages
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+
 const db = require("./database");
+const authenticateAdmin = require("./authMiddleware");
 
 // Create Express app
 const app = express();
@@ -24,6 +29,69 @@ app.get("/", (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
+app.post("/auth/login", (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({
+      error: "Email and password are required."
+    });
+  }
+
+  db.get("SELECT * FROM admin_users WHERE email = ?", [email], (err, admin) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Login failed."
+      });
+    }
+
+    if (!admin) {
+      return res.status(401).json({
+        error: "Invalid email or password."
+      });
+    }
+
+    const passwordMatches = bcrypt.compareSync(password, admin.passwordHash);
+
+    if (!passwordMatches) {
+      return res.status(401).json({
+        error: "Invalid email or password."
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: admin.id,
+        email: admin.email,
+        role: "admin"
+      },
+      process.env.JWT_SECRET || "development-secret",
+      {
+        expiresIn: "8h"
+      }
+    );
+
+    res.json({
+      message: "Login successful",
+      token,
+      admin: {
+        email: admin.email
+      }
+    });
+  });
+});
+
+app.get("/auth/me", authenticateAdmin, (req, res) => {
+  res.json({
+    admin: req.admin
+  });
+});
+
+/*
+|--------------------------------------------------------------------------
 | EVENTS ROUTES
 |--------------------------------------------------------------------------
 */
@@ -37,7 +105,7 @@ app.get("/events", (req, res) => {
   });
 });
 
-app.post("/events", (req, res) => {
+app.post("/events", authenticateAdmin, (req, res) => {
   const { name, day, time, description } = req.body;
 
   const sql = `
@@ -57,7 +125,7 @@ app.post("/events", (req, res) => {
   });
 });
 
-app.put("/events/:id", (req, res) => {
+app.put("/events/:id", authenticateAdmin, (req, res) => {
   const eventId = req.params.id;
   const { name, day, time, description } = req.body;
 
@@ -83,7 +151,7 @@ app.put("/events/:id", (req, res) => {
   });
 });
 
-app.delete("/events/:id", (req, res) => {
+app.delete("/events/:id", authenticateAdmin, (req, res) => {
   const eventId = req.params.id;
 
   db.run("DELETE FROM events WHERE id = ?", [eventId], function (err) {
@@ -132,7 +200,7 @@ app.post("/bookings", (req, res) => {
   );
 });
 
-app.get("/bookings", (req, res) => {
+app.get("/bookings", authenticateAdmin, (req, res) => {
   db.all("SELECT * FROM bookings ORDER BY createdAt DESC", [], (err, rows) => {
     if (err) {
       return res.status(500).json({ error: "Bookings could not be loaded" });
@@ -142,7 +210,7 @@ app.get("/bookings", (req, res) => {
   });
 });
 
-app.put("/bookings/:id", (req, res) => {
+app.put("/bookings/:id", authenticateAdmin, (req, res) => {
   const bookingId = req.params.id;
   const { name, email, phone, eventType, eventDate, guestCount, notes } =
     req.body;
@@ -173,7 +241,7 @@ app.put("/bookings/:id", (req, res) => {
   );
 });
 
-app.delete("/bookings/:id", (req, res) => {
+app.delete("/bookings/:id", authenticateAdmin, (req, res) => {
   const bookingId = req.params.id;
 
   db.run("DELETE FROM bookings WHERE id = ?", [bookingId], function (err) {
@@ -244,7 +312,7 @@ app.post("/performers", (req, res) => {
   );
 });
 
-app.get("/performers", (req, res) => {
+app.get("/performers", authenticateAdmin, (req, res) => {
   db.all(
     "SELECT * FROM performer_applications ORDER BY createdAt DESC",
     [],
@@ -260,7 +328,7 @@ app.get("/performers", (req, res) => {
   );
 });
 
-app.put("/performers/:id/status", (req, res) => {
+app.put("/performers/:id/status", authenticateAdmin, (req, res) => {
   const performerId = req.params.id;
   const { status } = req.body;
 
@@ -291,7 +359,7 @@ app.put("/performers/:id/status", (req, res) => {
   });
 });
 
-app.delete("/performers/:id", (req, res) => {
+app.delete("/performers/:id", authenticateAdmin, (req, res) => {
   const performerId = req.params.id;
 
   db.run(
@@ -345,7 +413,7 @@ app.post("/contact", (req, res) => {
   });
 });
 
-app.get("/contact", (req, res) => {
+app.get("/contact", authenticateAdmin, (req, res) => {
   db.all(
     "SELECT * FROM contact_messages ORDER BY createdAt DESC",
     [],
@@ -361,7 +429,7 @@ app.get("/contact", (req, res) => {
   );
 });
 
-app.delete("/contact/:id", (req, res) => {
+app.delete("/contact/:id", authenticateAdmin, (req, res) => {
   const contactId = req.params.id;
 
   db.run("DELETE FROM contact_messages WHERE id = ?", [contactId], function (err) {
