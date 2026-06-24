@@ -6,6 +6,9 @@ function AdminBookings() {
   const [message, setMessage] = useState("");
   const [editingBookingId, setEditingBookingId] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -27,6 +30,40 @@ function AdminBookings() {
   useEffect(() => {
     loadBookings();
   }, []);
+
+  const pendingCount = bookings.filter(
+    (booking) => booking.status === "Pending" || !booking.status
+  ).length;
+
+  const confirmedCount = bookings.filter(
+    (booking) => booking.status === "Confirmed"
+  ).length;
+
+  const rejectedCount = bookings.filter(
+    (booking) => booking.status === "Rejected"
+  ).length;
+
+  const completedCount = bookings.filter(
+    (booking) => booking.status === "Completed"
+  ).length;
+
+  const filteredBookings = bookings.filter((booking) => {
+    const searchText = `
+      ${booking.name}
+      ${booking.email}
+      ${booking.phone}
+      ${booking.eventType}
+      ${booking.eventDate}
+      ${booking.status}
+    `.toLowerCase();
+
+    const matchesSearch = searchText.includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "All" || (booking.status || "Pending") === statusFilter;
+
+    return matchesSearch && matchesStatus;
+  });
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -79,7 +116,7 @@ function AdminBookings() {
       body: JSON.stringify(formData)
     })
       .then(() => {
-        setMessage("Booking updated successfully!");
+        setMessage("Booking updated successfully.");
         resetForm();
         loadBookings();
       })
@@ -108,7 +145,9 @@ function AdminBookings() {
   }
 
   function deleteBooking(id) {
-    const confirmed = window.confirm("Are you sure you want to delete this booking?");
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this booking?"
+    );
 
     if (!confirmed) {
       return;
@@ -118,7 +157,7 @@ function AdminBookings() {
       method: "DELETE"
     })
       .then(() => {
-        setMessage("Booking deleted successfully!");
+        setMessage("Booking deleted successfully.");
         loadBookings();
       })
       .catch((err) => {
@@ -147,6 +186,52 @@ function AdminBookings() {
         <button className="secondary-btn" onClick={exportBookings}>
           Export CSV
         </button>
+      </div>
+
+      <div className="mini-stats-grid">
+        <div className="mini-stat-card">
+          <strong>{bookings.length}</strong>
+          <span>Total</span>
+        </div>
+
+        <div className="mini-stat-card">
+          <strong>{pendingCount}</strong>
+          <span>Pending</span>
+        </div>
+
+        <div className="mini-stat-card">
+          <strong>{confirmedCount}</strong>
+          <span>Confirmed</span>
+        </div>
+
+        <div className="mini-stat-card">
+          <strong>{rejectedCount}</strong>
+          <span>Rejected</span>
+        </div>
+
+        <div className="mini-stat-card">
+          <strong>{completedCount}</strong>
+          <span>Completed</span>
+        </div>
+      </div>
+
+      <div className="admin-toolbar">
+        <input
+          placeholder="Search by name, email, phone, event or date..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="All">All statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Confirmed">Confirmed</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Completed">Completed</option>
+        </select>
       </div>
 
       {message && <p className="form-message">{message}</p>}
@@ -235,7 +320,7 @@ function AdminBookings() {
       )}
 
       <div className="admin-bookings-grid admin-list-spacing">
-        {bookings.map((booking) => (
+        {filteredBookings.map((booking) => (
           <div className="admin-booking-card" key={booking.id}>
             <div className="admin-card-topline">
               <h2>{booking.name}</h2>
@@ -312,6 +397,13 @@ function AdminBookings() {
           </div>
         ))}
       </div>
+
+      {filteredBookings.length === 0 && (
+        <div className="empty-state">
+          <h2>No bookings found</h2>
+          <p>Try changing the search term or status filter.</p>
+        </div>
+      )}
     </section>
   );
 }

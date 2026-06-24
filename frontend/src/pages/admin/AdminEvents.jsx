@@ -6,6 +6,10 @@ function AdminEvents() {
   const [message, setMessage] = useState("");
   const [editingEventId, setEditingEventId] = useState(null);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [visibilityFilter, setVisibilityFilter] = useState("All");
+
   const [formData, setFormData] = useState({
     name: "",
     day: "",
@@ -26,6 +30,42 @@ function AdminEvents() {
   useEffect(() => {
     loadEvents();
   }, []);
+
+  const publishedCount = events.filter((event) => event.isPublished === 1).length;
+  const hiddenCount = events.filter((event) => event.isPublished !== 1).length;
+  const featuredCount = events.filter((event) => event.isFeatured === 1).length;
+
+  const categories = [
+    "All",
+    ...new Set(
+      events
+        .map((event) => event.category)
+        .filter((category) => category && category.trim() !== "")
+    )
+  ];
+
+  const filteredEvents = events.filter((event) => {
+    const searchText = `
+      ${event.name}
+      ${event.day}
+      ${event.time}
+      ${event.description}
+      ${event.category}
+    `.toLowerCase();
+
+    const matchesSearch = searchText.includes(searchTerm.toLowerCase());
+
+    const matchesCategory =
+      categoryFilter === "All" || event.category === categoryFilter;
+
+    const matchesVisibility =
+      visibilityFilter === "All" ||
+      (visibilityFilter === "Published" && event.isPublished === 1) ||
+      (visibilityFilter === "Hidden" && event.isPublished !== 1) ||
+      (visibilityFilter === "Featured" && event.isFeatured === 1);
+
+    return matchesSearch && matchesCategory && matchesVisibility;
+  });
 
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
@@ -64,8 +104,8 @@ function AdminEvents() {
       .then(() => {
         setMessage(
           editingEventId
-            ? "Event updated successfully!"
-            : "Event created successfully!"
+            ? "Event updated successfully."
+            : "Event created successfully."
         );
 
         resetForm();
@@ -105,12 +145,38 @@ function AdminEvents() {
       method: "DELETE"
     })
       .then(() => {
-        setMessage("Event deleted successfully!");
+        setMessage("Event deleted successfully.");
         loadEvents();
       })
       .catch((err) => {
         console.error(err);
         setMessage("Event could not be deleted.");
+      });
+  }
+
+  function duplicateEvent(event) {
+    const duplicatedEvent = {
+      name: `${event.name} Copy`,
+      day: event.day,
+      time: event.time,
+      description: event.description,
+      category: event.category || "Live Music",
+      capacity: event.capacity || 0,
+      isFeatured: false,
+      isPublished: false
+    };
+
+    apiFetch("/events", {
+      method: "POST",
+      body: JSON.stringify(duplicatedEvent)
+    })
+      .then(() => {
+        setMessage("Event duplicated as a hidden draft.");
+        loadEvents();
+      })
+      .catch((err) => {
+        console.error(err);
+        setMessage("Event could not be duplicated.");
       });
   }
 
@@ -134,6 +200,57 @@ function AdminEvents() {
         <button className="secondary-btn" onClick={exportEvents}>
           Export CSV
         </button>
+      </div>
+
+      <div className="mini-stats-grid">
+        <div className="mini-stat-card">
+          <strong>{events.length}</strong>
+          <span>Total</span>
+        </div>
+
+        <div className="mini-stat-card">
+          <strong>{publishedCount}</strong>
+          <span>Published</span>
+        </div>
+
+        <div className="mini-stat-card">
+          <strong>{hiddenCount}</strong>
+          <span>Hidden</span>
+        </div>
+
+        <div className="mini-stat-card">
+          <strong>{featuredCount}</strong>
+          <span>Featured</span>
+        </div>
+      </div>
+
+      <div className="admin-toolbar">
+        <input
+          placeholder="Search event name, day, category or description..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+        >
+          {categories.map((category) => (
+            <option key={category} value={category}>
+              {category === "All" ? "All categories" : category}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={visibilityFilter}
+          onChange={(e) => setVisibilityFilter(e.target.value)}
+        >
+          <option value="All">All visibility</option>
+          <option value="Published">Published</option>
+          <option value="Hidden">Hidden</option>
+          <option value="Featured">Featured</option>
+        </select>
       </div>
 
       {message && <p className="form-message">{message}</p>}
@@ -225,17 +342,23 @@ function AdminEvents() {
       </form>
 
       <div className="admin-bookings-grid admin-list-spacing">
-        {events.map((event) => (
+        {filteredEvents.map((event) => (
           <div className="admin-booking-card" key={event.id}>
             <div className="admin-card-topline">
               <h2>{event.name}</h2>
 
-              <span className={event.isPublished === 1 ? "status-pill" : "status-pill muted"}>
+              <span
+                className={
+                  event.isPublished === 1 ? "status-pill" : "status-pill muted"
+                }
+              >
                 {event.isPublished === 1 ? "Published" : "Hidden"}
               </span>
             </div>
 
-            {event.isFeatured === 1 && <span className="status-pill">Featured</span>}
+            {event.isFeatured === 1 && (
+              <span className="status-pill">Featured</span>
+            )}
 
             <p>
               <strong>Category:</strong> {event.category || "Live Music"}
@@ -263,6 +386,13 @@ function AdminEvents() {
                 Edit
               </button>
 
+              <button
+                className="secondary-btn"
+                onClick={() => duplicateEvent(event)}
+              >
+                Duplicate
+              </button>
+
               <button className="reject-btn" onClick={() => deleteEvent(event.id)}>
                 Delete
               </button>
@@ -270,6 +400,13 @@ function AdminEvents() {
           </div>
         ))}
       </div>
+
+      {filteredEvents.length === 0 && (
+        <div className="empty-state">
+          <h2>No events found</h2>
+          <p>Try changing the search, category or visibility filter.</p>
+        </div>
+      )}
     </section>
   );
 }

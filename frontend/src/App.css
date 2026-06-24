@@ -910,3 +910,434 @@ body {
     flex-direction: column;
   }
 }
+
+/* Bigger, cleaner admin search/filter area */
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 22px;
+  margin: 35px 0 40px;
+  align-items: stretch;
+}
+
+.admin-toolbar input,
+.admin-toolbar select {
+  min-height: 62px;
+  padding: 18px 22px;
+  border-radius: 20px;
+  font-size: 1.05rem;
+}
+
+/* Bigger booking stats cards */
+.mini-stats-grid {
+  gap: 24px;
+  margin: 35px 0 38px;
+}
+
+.mini-stat-card {
+  padding: 30px 26px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mini-stat-card strong {
+  font-size: 2.7rem;
+  line-height: 1;
+  margin-bottom: 12px;
+}
+
+.mini-stat-card span {
+  font-size: 1rem;
+}
+
+/* Make it breathe better on smaller screens */
+@media (max-width: 900px) {
+  .admin-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .mini-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .mini-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   PREMIUM POLISH LAYER
+   Adds smoother motion, better spacing, glow, hover states,
+   and a more professional manager-dashboard feel.
+========================================================= */
+
+:root {
+  --castle-gold: #f7e2a0;
+  --castle-gold-soft: rgba(247, 226, 160, 0.16);
+  --castle-border: rgba(247, 226, 160, 0.2);
+  --castle-glass: rgba(10, 10, 12, 0.78);
+  --castle-white-soft: rgba(255, 255, 255, 0.72);
+}
+
+/* Smooth page entrance */
+.admin-page,
+.booking-page,
+.events-page,
+.event-details-page {
+  animation: pageFadeUp 0.55s ease both;
+}
+
+@keyframes pageFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Premium background depth */
+.site {
+  background:
+    radial-gradient(circle at top left, rgba(247, 226, 160, 0.12), transparent 32%),
+    radial-gradient(circle at bottom right, rgba(120, 60, 255, 0.1), transparent 35%),
+    #08080a;
+  min-height: 100vh;
+}
+
+/* Navbar upgrade */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(18px);
+  background: rgba(8, 8, 10, 0.78);
+  border-bottom: 1px solid rgba(247, 226, 160, 0.12);
+}
+
+.navbar h2 {
+  letter-spacing: -0.04em;
+  color: var(--castle-gold);
+}
+
+.nav-links a {
+  position: relative;
+  transition: 0.25s ease;
+}
+
+.nav-links a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -7px;
+  width: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--castle-gold);
+  transition: 0.25s ease;
+}
+
+.nav-links a:hover {
+  color: var(--castle-gold);
+}
+
+.nav-links a:hover::after {
+  width: 100%;
+}
+
+/* Better buttons */
+.primary-btn,
+.secondary-btn,
+.accept-btn,
+.reject-btn {
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    background 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.primary-btn:hover,
+.secondary-btn:hover,
+.accept-btn:hover,
+.reject-btn:hover {
+  transform: translateY(-3px);
+}
+
+.primary-btn {
+  box-shadow: 0 14px 35px rgba(247, 226, 160, 0.16);
+}
+
+.primary-btn:hover {
+  box-shadow: 0 20px 45px rgba(247, 226, 160, 0.28);
+}
+
+.accept-btn:hover {
+  box-shadow: 0 16px 35px rgba(80, 255, 160, 0.12);
+}
+
+.reject-btn:hover {
+  box-shadow: 0 16px 35px rgba(255, 80, 100, 0.12);
+}
+
+/* Premium dashboard cards */
+.admin-dashboard-card,
+.admin-booking-card,
+.admin-stat-card,
+.mini-stat-card,
+.event-card,
+.featured-strip,
+.event-details-card,
+.admin-login-card,
+.recent-panel {
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(18px);
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.admin-dashboard-card::before,
+.admin-booking-card::before,
+.admin-stat-card::before,
+.mini-stat-card::before,
+.event-card::before,
+.featured-strip::before,
+.event-details-card::before,
+.admin-login-card::before,
+.recent-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.08),
+      transparent 35%,
+      rgba(247, 226, 160, 0.06)
+    );
+  opacity: 0;
+  transition: 0.25s ease;
+}
+
+.admin-dashboard-card:hover,
+.admin-booking-card:hover,
+.admin-stat-card:hover,
+.mini-stat-card:hover,
+.event-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(247, 226, 160, 0.34);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+}
+
+.admin-dashboard-card:hover::before,
+.admin-booking-card:hover::before,
+.admin-stat-card:hover::before,
+.mini-stat-card:hover::before,
+.event-card:hover::before {
+  opacity: 1;
+}
+
+/* Make stats feel expensive */
+.admin-stat-card h2,
+.mini-stat-card strong {
+  background: linear-gradient(135deg, #fff4c7, #f7e2a0, #b88a36);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mini-stats-grid {
+  gap: 28px;
+  margin: 40px 0 42px;
+}
+
+.mini-stat-card {
+  padding: 34px 30px;
+  min-height: 135px;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, rgba(247, 226, 160, 0.08), transparent),
+    rgba(10, 10, 12, 0.82);
+}
+
+.mini-stat-card strong {
+  font-size: 3rem;
+  line-height: 1;
+  margin-bottom: 14px;
+}
+
+.mini-stat-card span {
+  font-size: 1.02rem;
+  letter-spacing: 0.02em;
+}
+
+/* Search/filter toolbar upgrade */
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 22px;
+  margin: 38px 0 45px;
+}
+
+.admin-toolbar input,
+.admin-toolbar select,
+.booking-form input,
+.booking-form select,
+.booking-form textarea {
+  min-height: 62px;
+  border-radius: 22px;
+  border: 1px solid rgba(247, 226, 160, 0.2);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025)),
+    rgba(0, 0, 0, 0.34);
+  color: #fff;
+  transition:
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s ease;
+}
+
+.admin-toolbar input:focus,
+.admin-toolbar select:focus,
+.booking-form input:focus,
+.booking-form select:focus,
+.booking-form textarea:focus {
+  outline: none;
+  border-color: rgba(247, 226, 160, 0.55);
+  box-shadow: 0 0 0 4px rgba(247, 226, 160, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Better admin cards spacing */
+.admin-booking-card {
+  border-radius: 28px;
+  padding: 32px;
+}
+
+.admin-booking-card h2 {
+  font-size: 1.55rem;
+  letter-spacing: -0.03em;
+}
+
+.admin-booking-card p {
+  line-height: 1.7;
+}
+
+.admin-actions {
+  gap: 12px;
+  margin-top: 24px;
+}
+
+/* Status pills feel more premium */
+.status-pill {
+  box-shadow: inset 0 0 20px rgba(247, 226, 160, 0.06);
+  letter-spacing: 0.02em;
+}
+
+/* Empty states */
+.empty-state {
+  animation: softPulse 1.1s ease both;
+}
+
+@keyframes softPulse {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Public event cards feel richer */
+.events-grid {
+  gap: 30px;
+}
+
+.event-card {
+  border-radius: 30px;
+  padding: 34px;
+  background:
+    linear-gradient(145deg, rgba(247, 226, 160, 0.08), transparent),
+    rgba(12, 12, 14, 0.86);
+}
+
+.event-card h2 {
+  font-size: 1.8rem;
+  letter-spacing: -0.04em;
+}
+
+/* Form message polish */
+.form-message {
+  border-radius: 18px;
+  padding: 16px 20px;
+  background: rgba(247, 226, 160, 0.1);
+  border: 1px solid rgba(247, 226, 160, 0.2);
+  color: var(--castle-gold);
+  animation: messageSlide 0.35s ease both;
+}
+
+@keyframes messageSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Better mobile layout */
+@media (max-width: 1000px) {
+  .admin-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .mini-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .mini-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-booking-card {
+    padding: 24px;
+  }
+
+  .admin-actions {
+    flex-direction: column;
+  }
+
+  .admin-actions button {
+    width: 100%;
+  }
+}
+
+/* Respect reduced-motion settings */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

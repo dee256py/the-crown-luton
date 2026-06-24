@@ -50,3 +50,35 @@ export async function apiFetch(path, options = {}) {
 
   return data;
 }
+
+export async function downloadProtectedFile(path, filename) {
+  const token = getAdminToken();
+
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (response.status === 401 || response.status === 403) {
+    removeAdminToken();
+    window.location.href = "/admin/login";
+    throw new Error("Admin login required.");
+  }
+
+  if (!response.ok) {
+    throw new Error("Download failed.");
+  }
+
+  const blob = await response.blob();
+  const url = window.URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+
+  link.remove();
+  window.URL.revokeObjectURL(url);
+}

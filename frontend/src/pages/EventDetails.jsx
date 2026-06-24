@@ -30,6 +30,19 @@ function EventDetails() {
     return (
       <section className="booking-page">
         <p className="form-message">{message}</p>
+
+        <Link className="secondary-btn" to="/events">
+          Back to Events
+        </Link>
+      </section>
+    );
+  }
+
+  if (!event) {
+    return (
+      <section className="booking-page">
+        <p className="form-message">Event not found.</p>
+
         <Link className="secondary-btn" to="/events">
           Back to Events
         </Link>
