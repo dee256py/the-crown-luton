@@ -19,48 +19,92 @@ app.use(express.json());
 |--------------------------------------------------------------------------
 */
 app.get("/", (req, res) => {
-  res.send("Welcome to The Crown Luton API");
+  res.send("Welcome to The Castle Live API");
 });
 
 /*
 |--------------------------------------------------------------------------
-| EVENTS ROUTE
+| EVENTS ROUTES
 |--------------------------------------------------------------------------
 */
 app.get("/events", (req, res) => {
-  const events = [
-    {
-      id: 1,
-      name: "Open Mic Night",
-      day: "Friday",
-      time: "7:00 PM",
-      description:
-        "A welcoming night for local singers, poets and performers."
-    },
-    {
-      id: 2,
-      name: "Live DJ Set",
-      day: "Saturday",
-      time: "9:00 PM",
-      description:
-        "Late-night DJ sets featuring local talent and guest performers."
-    },
-    {
-      id: 3,
-      name: "Karaoke Night",
-      day: "Sunday",
-      time: "8:00 PM",
-      description:
-        "Grab the mic and sing your favourite songs with friends."
+  db.all("SELECT * FROM events ORDER BY id DESC", [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({ error: "Events could not be loaded" });
     }
-  ];
 
-  res.json(events);
+    res.json(rows);
+  });
+});
+
+app.post("/events", (req, res) => {
+  const { name, day, time, description } = req.body;
+
+  const sql = `
+    INSERT INTO events (name, day, time, description)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.run(sql, [name, day, time, description], function (err) {
+    if (err) {
+      return res.status(500).json({ error: "Event could not be created" });
+    }
+
+    res.status(201).json({
+      message: "Event created successfully",
+      eventId: this.lastID
+    });
+  });
+});
+
+app.put("/events/:id", (req, res) => {
+  const eventId = req.params.id;
+  const { name, day, time, description } = req.body;
+
+  const sql = `
+    UPDATE events
+    SET name = ?, day = ?, time = ?, description = ?
+    WHERE id = ?
+  `;
+
+  db.run(sql, [name, day, time, description, eventId], function (err) {
+    if (err) {
+      return res.status(500).json({ error: "Event could not be updated" });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    res.json({
+      message: "Event updated successfully",
+      updatedEventId: eventId
+    });
+  });
+});
+
+app.delete("/events/:id", (req, res) => {
+  const eventId = req.params.id;
+
+  db.run("DELETE FROM events WHERE id = ?", [eventId], function (err) {
+    if (err) {
+      return res.status(500).json({ error: "Event could not be deleted" });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+
+    res.json({
+      message: "Event deleted successfully",
+      deletedEventId: eventId
+    });
+  });
 });
 
 /*
 |--------------------------------------------------------------------------
-| CREATE BOOKING
+| BOOKING ROUTES
 |--------------------------------------------------------------------------
 */
 app.post("/bookings", (req, res) => {
@@ -77,9 +121,7 @@ app.post("/bookings", (req, res) => {
     [name, email, phone, eventType, eventDate, guestCount, notes],
     function (err) {
       if (err) {
-        return res.status(500).json({
-          error: "Booking could not be saved"
-        });
+        return res.status(500).json({ error: "Booking could not be saved" });
       }
 
       res.status(201).json({
@@ -90,31 +132,18 @@ app.post("/bookings", (req, res) => {
   );
 });
 
-/*
-|--------------------------------------------------------------------------
-| GET ALL BOOKINGS
-|--------------------------------------------------------------------------
-*/
 app.get("/bookings", (req, res) => {
   db.all("SELECT * FROM bookings ORDER BY createdAt DESC", [], (err, rows) => {
     if (err) {
-      return res.status(500).json({
-        error: "Bookings could not be loaded"
-      });
+      return res.status(500).json({ error: "Bookings could not be loaded" });
     }
 
     res.json(rows);
   });
 });
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE BOOKING
-|--------------------------------------------------------------------------
-*/
 app.put("/bookings/:id", (req, res) => {
   const bookingId = req.params.id;
-
   const { name, email, phone, eventType, eventDate, guestCount, notes } =
     req.body;
 
@@ -129,15 +158,11 @@ app.put("/bookings/:id", (req, res) => {
     [name, email, phone, eventType, eventDate, guestCount, notes, bookingId],
     function (err) {
       if (err) {
-        return res.status(500).json({
-          error: "Booking could not be updated"
-        });
+        return res.status(500).json({ error: "Booking could not be updated" });
       }
 
       if (this.changes === 0) {
-        return res.status(404).json({
-          error: "Booking not found"
-        });
+        return res.status(404).json({ error: "Booking not found" });
       }
 
       res.json({
@@ -148,27 +173,16 @@ app.put("/bookings/:id", (req, res) => {
   );
 });
 
-/*
-|--------------------------------------------------------------------------
-| DELETE BOOKING
-|--------------------------------------------------------------------------
-*/
 app.delete("/bookings/:id", (req, res) => {
   const bookingId = req.params.id;
 
-  const sql = "DELETE FROM bookings WHERE id = ?";
-
-  db.run(sql, [bookingId], function (err) {
+  db.run("DELETE FROM bookings WHERE id = ?", [bookingId], function (err) {
     if (err) {
-      return res.status(500).json({
-        error: "Booking could not be deleted"
-      });
+      return res.status(500).json({ error: "Booking could not be deleted" });
     }
 
     if (this.changes === 0) {
-      return res.status(404).json({
-        error: "Booking not found"
-      });
+      return res.status(404).json({ error: "Booking not found" });
     }
 
     res.json({
@@ -178,6 +192,11 @@ app.delete("/bookings/:id", (req, res) => {
   });
 });
 
+/*
+|--------------------------------------------------------------------------
+| PERFORMER ROUTES
+|--------------------------------------------------------------------------
+*/
 app.post("/performers", (req, res) => {
   const {
     stageName,
@@ -241,11 +260,6 @@ app.get("/performers", (req, res) => {
   );
 });
 
-/*
-|--------------------------------------------------------------------------
-| UPDATE PERFORMER STATUS
-|--------------------------------------------------------------------------
-*/
 app.put("/performers/:id/status", (req, res) => {
   const performerId = req.params.id;
   const { status } = req.body;
@@ -277,38 +291,95 @@ app.put("/performers/:id/status", (req, res) => {
   });
 });
 
+app.delete("/performers/:id", (req, res) => {
+  const performerId = req.params.id;
+
+  db.run(
+    "DELETE FROM performer_applications WHERE id = ?",
+    [performerId],
+    function (err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Performer application could not be deleted"
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: "Performer application not found"
+        });
+      }
+
+      res.json({
+        message: "Performer application deleted successfully",
+        deletedPerformerId: performerId
+      });
+    }
+  );
+});
+
 /*
 |--------------------------------------------------------------------------
-| UPDATE PERFORMER STATUS
+| CONTACT ROUTES
 |--------------------------------------------------------------------------
 */
-app.put("/performers/:id/status", (req, res) => {
-  const performerId = req.params.id;
-  const { status } = req.body;
+app.post("/contact", (req, res) => {
+  const { name, email, phone, subject, message } = req.body;
 
   const sql = `
-    UPDATE performer_applications
-    SET status = ?
-    WHERE id = ?
+    INSERT INTO contact_messages (name, email, phone, subject, message)
+    VALUES (?, ?, ?, ?, ?)
   `;
 
-  db.run(sql, [status, performerId], function (err) {
+  db.run(sql, [name, email, phone, subject, message], function (err) {
     if (err) {
       return res.status(500).json({
-        error: "Performer status could not be updated"
+        error: "Contact message could not be saved"
+      });
+    }
+
+    res.status(201).json({
+      message: "Contact message saved successfully",
+      contactId: this.lastID
+    });
+  });
+});
+
+app.get("/contact", (req, res) => {
+  db.all(
+    "SELECT * FROM contact_messages ORDER BY createdAt DESC",
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Contact messages could not be loaded"
+        });
+      }
+
+      res.json(rows);
+    }
+  );
+});
+
+app.delete("/contact/:id", (req, res) => {
+  const contactId = req.params.id;
+
+  db.run("DELETE FROM contact_messages WHERE id = ?", [contactId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        error: "Contact message could not be deleted"
       });
     }
 
     if (this.changes === 0) {
       return res.status(404).json({
-        error: "Performer application not found"
+        error: "Contact message not found"
       });
     }
 
     res.json({
-      message: "Performer status updated successfully",
-      performerId,
-      status
+      message: "Contact message deleted successfully",
+      deletedContactId: contactId
     });
   });
 });

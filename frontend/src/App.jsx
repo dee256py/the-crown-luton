@@ -1,59 +1,36 @@
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import AdminBookings from "./pages/admin/AdminBookings";
+import AdminPerformers from "./pages/admin/AdminPerformers";
+import AdminHome from "./pages/admin/AdminHome";
+import AdminEvents from "./pages/admin/AdminEvents";
 import "./App.css";
+
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Events from "./pages/Events";
+import BookEvent from "./pages/BookEvent";
+import PerformHere from "./pages/PerformHere";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
-    <main className="site">
-      <nav className="navbar">
-        <h2>The Crown 👑</h2>
+    <BrowserRouter>
+      <main className="site">
+        <Navbar />
 
-        <div className="nav-links">
-          <a>Home</a>
-          <a>Events</a>
-          <a>Bookings</a>
-          <a>Perform Here</a>
-          <a>Contact</a>
-        </div>
-      </nav>
-
-      <section className="hero">
-        <p className="eyebrow">Luton’s community pub & live music space</p>
-
-        <h1>
-          Live Music.
-          <br />
-          Great Events.
-          <br />
-          A Place For Everyone.
-        </h1>
-
-        <p className="hero-text">
-          A modern British pub, live music venue, event space and proud
-          community hub in the heart of Luton.
-        </p>
-
-        <div className="hero-buttons">
-          <button className="primary-btn">View Events</button>
-          <button className="secondary-btn">Book An Event</button>
-        </div>
-      </section>
-
-      <section className="feature-grid">
-        <Feature icon="🎤" title="Live Music" text="Open mic nights, DJs and local performers." />
-        <Feature icon="🎉" title="Private Events" text="Birthdays, celebrations and community nights." />
-        <Feature icon="🏳️‍🌈" title="Inclusive Space" text="A welcoming atmosphere for everyone." />
-        <Feature icon="🍻" title="Great Drinks" text="Classic pub energy with modern nightlife vibes." />
-      </section>
-    </main>
-  );
-}
-
-function Feature({ icon, title, text }) {
-  return (
-    <div className="feature-card">
-      <span>{icon}</span>
-      <h3>{title}</h3>
-      <p>{text}</p>
-    </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/events" element={<Events />} />
+          <Route path="/book-event" element={<BookEvent />} />
+          <Route path="/perform" element={<PerformHere />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/admin/bookings" element={<AdminBookings />} />
+          <Route path="/admin/performers" element={<AdminPerformers />}/>
+          <Route path="/admin" element={<AdminHome />} />
+          <Route path="/admin/events" element={<AdminEvents />} />
+        </Routes>
+      </main>
+    </BrowserRouter>
   );
 }
 

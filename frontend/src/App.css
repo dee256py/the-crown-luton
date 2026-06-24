@@ -12,9 +12,17 @@ body {
 .site {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(212, 175, 55, 0.18), transparent 35%),
+    radial-gradient(
+      circle at top,
+      rgba(212, 175, 55, 0.15),
+      transparent 35%
+    ),
     #111111;
 }
+
+/* ==========================
+   NAVBAR
+========================== */
 
 .navbar {
   display: flex;
@@ -31,12 +39,16 @@ body {
 .nav-links {
   display: flex;
   gap: 28px;
-  color: #dddddd;
 }
 
 .nav-links a {
-  cursor: pointer;
+  text-decoration: none;
+  color: #dddddd;
 }
+
+/* ==========================
+   HERO
+========================== */
 
 .hero {
   text-align: center;
@@ -45,52 +57,55 @@ body {
 
 .eyebrow {
   color: #d4af37;
-  letter-spacing: 2px;
-  text-transform: uppercase;
   font-size: 0.8rem;
+  letter-spacing: 2px;
   font-weight: bold;
 }
 
 .hero h1 {
-  font-size: clamp(2.8rem, 7vw, 5.6rem);
+  font-size: clamp(3rem, 8vw, 5.5rem);
   line-height: 1;
   margin: 20px 0;
 }
 
 .hero-text {
-  max-width: 720px;
+  max-width: 700px;
   margin: 0 auto;
   color: #cccccc;
-  font-size: 1.15rem;
   line-height: 1.7;
+  font-size: 1.1rem;
 }
 
 .hero-buttons {
-  margin-top: 38px;
+  margin-top: 40px;
   display: flex;
   justify-content: center;
   gap: 18px;
   flex-wrap: wrap;
 }
 
-button {
-  padding: 15px 32px;
+.primary-btn {
+  background: #d4af37;
+  color: black;
+  border: none;
+  padding: 15px 30px;
   border-radius: 999px;
   font-weight: bold;
   cursor: pointer;
 }
 
-.primary-btn {
-  background: #d4af37;
-  border: none;
-  color: #111111;
-}
-
 .secondary-btn {
   background: transparent;
-  border: 1px solid white;
   color: white;
+  border: 1px solid white;
+  padding: 15px 30px;
+  border-radius: 999px;
+  cursor: pointer;
 }
+
+/* ==========================
+   FEATURES
+========================== */
 
 .feature-grid {
   display: grid;
@@ -111,13 +126,72 @@ button {
 }
 
 .feature-card h3 {
-  margin-bottom: 10px;
+  margin-top: 12px;
 }
 
 .feature-card p {
   color: #bdbdbd;
   line-height: 1.6;
 }
+
+/* ==========================
+   EVENTS
+========================== */
+
+.events-section {
+  padding: 80px 8%;
+  border-top: 1px solid #2a2a2a;
+  text-align: center;
+}
+
+.events-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 40px;
+}
+
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.event-card {
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 20px;
+  padding: 28px;
+  text-align: left;
+}
+
+.event-card h3 {
+  margin-top: 0;
+}
+
+.event-time {
+  color: #d4af37;
+  font-weight: bold;
+}
+
+.event-description {
+  color: #bdbdbd;
+  line-height: 1.6;
+  margin-top: 14px;
+}
+
+.event-button {
+  margin-top: 20px;
+  background: #d4af37;
+  color: black;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* ==========================
+   MOBILE
+========================== */
 
 @media (max-width: 850px) {
   .navbar {
@@ -131,6 +205,346 @@ button {
   }
 
   .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .events-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.event-detail-section {
+  margin: 40px 8% 90px;
+  padding: 50px;
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 24px;
+  text-align: center;
+}
+
+.event-detail-section h2 {
+  font-size: 2.6rem;
+  margin-bottom: 12px;
+}
+
+.event-description.large {
+  max-width: 720px;
+  margin: 24px auto;
+  font-size: 1.1rem;
+}
+
+.close-detail-button {
+  background: transparent;
+  color: white;
+  border: 1px solid #555;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-bottom: 25px;
+}
+
+.event-detail-section {
+  margin: 40px 8% 90px;
+  padding: 50px;
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 24px;
+  text-align: center;
+}
+
+.event-detail-section h2 {
+  font-size: 2.6rem;
+  margin-bottom: 12px;
+}
+
+.event-description.large {
+  max-width: 720px;
+  margin: 24px auto;
+  font-size: 1.1rem;
+}
+
+.close-detail-button {
+  background: transparent;
+  color: white;
+  border: 1px solid #555;
+  padding: 10px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  margin-bottom: 25px;
+}
+
+.page-section {
+  padding: 120px 8%;
+  text-align: center;
+}
+
+.page-section h1 {
+  font-size: 3rem;
+}
+
+.page-section p {
+  color: #bdbdbd;
+}
+
+/* ==========================
+   EVENTS PAGE
+========================== */
+
+.events-page {
+  padding: 100px 8%;
+  text-align: center;
+}
+
+.events-page h1 {
+  font-size: clamp(2.5rem, 7vw, 4.5rem);
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.events-page-intro {
+  max-width: 700px;
+  margin: 0 auto 60px auto;
+  color: #bdbdbd;
+  line-height: 1.8;
+}
+
+.events-page-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.large-event-card {
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.event-image-placeholder {
+  height: 260px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 5rem;
+
+  background:
+    linear-gradient(
+      rgba(0, 0, 0, 0.2),
+      rgba(0, 0, 0, 0.7)
+    ),
+    #222;
+}
+
+.event-content {
+  padding: 35px;
+}
+
+.event-content h2 {
+  margin-top: 0;
+}
+
+.event-content p {
+  line-height: 1.8;
+}
+
+/* ==========================
+   BOOKING PAGE
+========================== */
+
+.booking-page {
+  padding: 100px 8%;
+  text-align: center;
+}
+
+.booking-page h1 {
+  font-size: clamp(2.8rem, 7vw, 4.5rem);
+  margin-bottom: 20px;
+}
+
+.booking-intro {
+  max-width: 700px;
+  margin: 0 auto 50px auto;
+  color: #bdbdbd;
+  line-height: 1.8;
+}
+
+.booking-form {
+  max-width: 760px;
+  margin: 0 auto;
+  display: grid;
+  gap: 18px;
+}
+
+.booking-form input,
+.booking-form textarea {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid #333;
+  background: #171717;
+  color: white;
+  font-size: 1rem;
+}
+
+.booking-form textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.booking-form input::placeholder,
+.booking-form textarea::placeholder {
+  color: #888;
+}
+
+.form-message {
+  margin-top: 24px;
+  color: #d4af37;
+  font-weight: bold;
+}
+
+.admin-page {
+  padding: 100px 8%;
+}
+
+.admin-page h1 {
+  font-size: clamp(2.8rem, 7vw, 4.5rem);
+  margin-bottom: 40px;
+}
+
+.admin-bookings-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.admin-booking-card {
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 20px;
+  padding: 28px;
+}
+
+.admin-booking-card h2 {
+  margin-top: 0;
+  color: #d4af37;
+}
+
+.admin-booking-card p {
+  color: #cccccc;
+  line-height: 1.6;
+}
+
+.admin-actions {
+  margin-top: 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.accept-btn,
+.reject-btn {
+  border: none;
+  padding: 12px 22px;
+  border-radius: 999px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.accept-btn {
+  background: #2ecc71;
+  color: #111;
+}
+
+.reject-btn {
+  background: #ff5c5c;
+  color: #111;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 40px;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-bottom: 40px;
+}
+
+.admin-stat-card,
+.admin-dashboard-card {
+  background: #171717;
+  border: 1px solid #333;
+  border-radius: 22px;
+  padding: 30px;
+}
+
+.admin-stat-card {
+  text-align: center;
+}
+
+.admin-stat-card h2 {
+  color: #d4af37;
+  font-size: 3rem;
+  margin: 0;
+}
+
+.admin-stat-card p,
+.admin-dashboard-card p {
+  color: #bdbdbd;
+}
+
+.admin-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+.admin-dashboard-card {
+  text-decoration: none;
+  color: white;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.admin-dashboard-card:hover {
+  transform: translateY(-5px);
+  border-color: #d4af37;
+}
+
+.admin-dashboard-card span {
+  color: #d4af37;
+  font-weight: bold;
+}
+
+@media (max-width: 850px) {
+  .admin-stats-grid,
+  .admin-dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-list-spacing {
+  margin-top: 50px;
+}
+
+.admin-stats-grid {
+  grid-template-columns: repeat(5, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .admin-stats-grid {
     grid-template-columns: 1fr;
   }
 }

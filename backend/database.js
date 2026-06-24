@@ -4,7 +4,11 @@ const sqlite3 = require("sqlite3").verbose();
 // Create/connect to database file
 const db = new sqlite3.Database("./crown.db");
 
-// Create bookings table if it does not exist
+/*
+|--------------------------------------------------------------------------
+| BOOKINGS TABLE
+|--------------------------------------------------------------------------
+*/
 db.run(`
   CREATE TABLE IF NOT EXISTS bookings (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,6 +23,11 @@ db.run(`
   )
 `);
 
+/*
+|--------------------------------------------------------------------------
+| PERFORMER APPLICATIONS TABLE
+|--------------------------------------------------------------------------
+*/
 db.run(`
   CREATE TABLE IF NOT EXISTS performer_applications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -36,14 +45,50 @@ db.run(`
   )
 `);
 
-db.run(`
+// Adds status column to older performer tables if missing
+db.run(
+  `
   ALTER TABLE performer_applications
   ADD COLUMN status TEXT DEFAULT 'Pending'
-`, (err) => {
-  if (err && !err.message.includes("duplicate column name")) {
-    console.error(err.message);
+`,
+  (err) => {
+    if (err && !err.message.includes("duplicate column name")) {
+      console.error(err.message);
+    }
   }
-});
+);
 
-// Export database so server.js can use it
+/*
+|--------------------------------------------------------------------------
+| EVENTS TABLE
+|--------------------------------------------------------------------------
+*/
+db.run(`
+  CREATE TABLE IF NOT EXISTS events (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    day TEXT NOT NULL,
+    time TEXT NOT NULL,
+    description TEXT NOT NULL,
+    createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+/*
+|--------------------------------------------------------------------------
+| CONTACT MESSAGES TABLE
+|--------------------------------------------------------------------------
+*/
+db.run(`
+  CREATE TABLE IF NOT EXISTS contact_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    subject TEXT NOT NULL,
+    message TEXT NOT NULL,
+    createdAt TEXT DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
 module.exports = db;
