@@ -1,11 +1,16 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import { API_BASE_URL } from "../api";
 
 function BookEvent() {
+  const [searchParams] = useSearchParams();
+  const selectedEvent = searchParams.get("event") || "";
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    eventType: "",
+    eventType: selectedEvent,
     eventDate: "",
     guestCount: "",
     notes: ""
@@ -13,8 +18,8 @@ function BookEvent() {
 
   const [message, setMessage] = useState("");
 
-  function handleChange(event) {
-    const { name, value } = event.target;
+  function handleChange(e) {
+    const { name, value } = e.target;
 
     setFormData({
       ...formData,
@@ -22,51 +27,52 @@ function BookEvent() {
     });
   }
 
-  function handleSubmit(event) {
-    event.preventDefault();
+  function handleSubmit(e) {
+    e.preventDefault();
 
-    fetch("http://localhost:5050/bookings", {
+    fetch(`${API_BASE_URL}/bookings`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({
-        ...formData,
-        guestCount: Number(formData.guestCount)
-      })
+      body: JSON.stringify(formData)
     })
-      .then((response) => response.json())
-      .then((data) => {
+      .then((res) => res.json())
+      .then(() => {
         setMessage("Booking request sent successfully!");
 
         setFormData({
           name: "",
           email: "",
           phone: "",
-          eventType: "",
+          eventType: selectedEvent,
           eventDate: "",
           guestCount: "",
           notes: ""
         });
-
-        console.log(data);
       })
-      .catch((error) => {
-        console.error(error);
+      .catch((err) => {
+        console.error(err);
         setMessage("Something went wrong. Please try again.");
       });
   }
 
   return (
     <section className="booking-page">
-      <p className="eyebrow">BOOK THE CROWN</p>
+      <p className="eyebrow">BOOK THE VENUE</p>
 
-      <h1>Book An Event</h1>
+      <h1>Book an Event</h1>
 
       <p className="booking-intro">
-        Planning a birthday, celebration, community night or private event?
-        Send us your details and we’ll get back to you.
+        Planning a party, private event, celebration or community night? Send a
+        booking request and the manager can review it from the dashboard.
       </p>
+
+      {selectedEvent && (
+        <p className="selected-event-note">
+          You are booking for: <strong>{selectedEvent}</strong>
+        </p>
+      )}
 
       <form className="booking-form" onSubmit={handleSubmit}>
         <input
@@ -96,7 +102,7 @@ function BookEvent() {
 
         <input
           name="eventType"
-          placeholder="Event type e.g. Birthday Party"
+          placeholder="Event type or event name"
           value={formData.eventType}
           onChange={handleChange}
           required
@@ -113,7 +119,7 @@ function BookEvent() {
         <input
           name="guestCount"
           type="number"
-          placeholder="Number of guests"
+          placeholder="Guest count"
           value={formData.guestCount}
           onChange={handleChange}
           required
@@ -121,7 +127,7 @@ function BookEvent() {
 
         <textarea
           name="notes"
-          placeholder="Tell us anything else we should know"
+          placeholder="Tell us anything important about your booking"
           value={formData.notes}
           onChange={handleChange}
         />

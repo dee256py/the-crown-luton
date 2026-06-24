@@ -1,5 +1,5 @@
-// Import packages
 require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
@@ -8,15 +8,33 @@ const jwt = require("jsonwebtoken");
 const db = require("./database");
 const authenticateAdmin = require("./authMiddleware");
 
-// Create Express app
 const app = express();
-
-// Backend port
 const PORT = 5050;
 
-// Middleware
 app.use(cors());
 app.use(express.json());
+
+function csvEscape(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
+
+function sendCSV(res, filename, rows, fields) {
+  const header = fields.join(",");
+
+  const body = rows
+    .map((row) => fields.map((field) => csvEscape(row[field])).join(","))
+    .join("\n");
+
+  const csv = `${header}\n${body}`;
+
+  res.setHeader("Content-Type", "text/csv");
+  res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+  res.send(csv);
+}
 
 /*
 |--------------------------------------------------------------------------
@@ -92,13 +110,65 @@ app.get("/auth/me", authenticateAdmin, (req, res) => {
 
 /*
 |--------------------------------------------------------------------------
-| EVENTS ROUTES
+| PUBLIC EVENT ROUTES
 |--------------------------------------------------------------------------
 */
 app.get("/events", (req, res) => {
+  const sql = `
+    SELECT *
+    FROM events
+    WHERE isPublished = 1
+    ORDER BY isFeatured DESC, id DESC
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Events could not be loaded"
+      });
+    }
+
+    res.json(rows);
+  });
+});
+
+app.get("/events/:id", (req, res) => {
+  const eventId = req.params.id;
+
+  const sql = `
+    SELECT *
+    FROM events
+    WHERE id = ? AND isPublished = 1
+  `;
+
+  db.get(sql, [eventId], (err, event) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Event could not be loaded"
+      });
+    }
+
+    if (!event) {
+      return res.status(404).json({
+        error: "Event not found"
+      });
+    }
+
+    res.json(event);
+  });
+});
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN EVENT ROUTES
+|--------------------------------------------------------------------------
+*/
+app.get("/admin/events", authenticateAdmin, (req, res) => {
   db.all("SELECT * FROM events ORDER BY id DESC", [], (err, rows) => {
     if (err) {
-      return res.status(500).json({ error: "Events could not be loaded" });
+      return res.status(500).json({
+        error: "Admin events could not be loaded"
+      });
     }
 
     res.json(rows);
@@ -106,49 +176,109 @@ app.get("/events", (req, res) => {
 });
 
 app.post("/events", authenticateAdmin, (req, res) => {
-  const { name, day, time, description } = req.body;
+  const {
+    name,
+    day,
+    time,
+    description,
+    category,
+    capacity,
+    isFeatured,
+    isPublished
+  } = req.body;
 
   const sql = `
-    INSERT INTO events (name, day, time, description)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO events
+    (name, day, time, description, category, capacity, isFeatured, isPublished)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-  db.run(sql, [name, day, time, description], function (err) {
-    if (err) {
-      return res.status(500).json({ error: "Event could not be created" });
-    }
+  db.run(
+    sql,
+    [
+      name,
+      day,
+      time,
+      description,
+      category || "Live Music",
+      Number(capacity) || 0,
+      isFeatured ? 1 : 0,
+      isPublished ? 1 : 0
+    ],
+    function (err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Event could not be created"
+        });
+      }
 
-    res.status(201).json({
-      message: "Event created successfully",
-      eventId: this.lastID
-    });
-  });
+      res.status(201).json({
+        message: "Event created successfully",
+        eventId: this.lastID
+      });
+    }
+  );
 });
 
 app.put("/events/:id", authenticateAdmin, (req, res) => {
   const eventId = req.params.id;
-  const { name, day, time, description } = req.body;
+
+  const {
+    name,
+    day,
+    time,
+    description,
+    category,
+    capacity,
+    isFeatured,
+    isPublished
+  } = req.body;
 
   const sql = `
     UPDATE events
-    SET name = ?, day = ?, time = ?, description = ?
+    SET name = ?,
+        day = ?,
+        time = ?,
+        description = ?,
+        category = ?,
+        capacity = ?,
+        isFeatured = ?,
+        isPublished = ?
     WHERE id = ?
   `;
 
-  db.run(sql, [name, day, time, description, eventId], function (err) {
-    if (err) {
-      return res.status(500).json({ error: "Event could not be updated" });
-    }
+  db.run(
+    sql,
+    [
+      name,
+      day,
+      time,
+      description,
+      category || "Live Music",
+      Number(capacity) || 0,
+      isFeatured ? 1 : 0,
+      isPublished ? 1 : 0,
+      eventId
+    ],
+    function (err) {
+      if (err) {
+        return res.status(500).json({
+          error: "Event could not be updated"
+        });
+      }
 
-    if (this.changes === 0) {
-      return res.status(404).json({ error: "Event not found" });
-    }
+      if (this.changes === 0) {
+        return res.status(404).json({
+          error: "Event not found"
+        });
+      }
 
-    res.json({
-      message: "Event updated successfully",
-      updatedEventId: eventId
-    });
-  });
+      res.json({
+        message: "Event updated successfully",
+        updatedEventId: eventId
+      });
+    }
+  );
 });
 
 app.delete("/events/:id", authenticateAdmin, (req, res) => {
@@ -156,11 +286,15 @@ app.delete("/events/:id", authenticateAdmin, (req, res) => {
 
   db.run("DELETE FROM events WHERE id = ?", [eventId], function (err) {
     if (err) {
-      return res.status(500).json({ error: "Event could not be deleted" });
+      return res.status(500).json({
+        error: "Event could not be deleted"
+      });
     }
 
     if (this.changes === 0) {
-      return res.status(404).json({ error: "Event not found" });
+      return res.status(404).json({
+        error: "Event not found"
+      });
     }
 
     res.json({
@@ -180,8 +314,9 @@ app.post("/bookings", (req, res) => {
     req.body;
 
   const sql = `
-    INSERT INTO bookings (name, email, phone, eventType, eventDate, guestCount, notes)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO bookings
+    (name, email, phone, eventType, eventDate, guestCount, notes, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')
   `;
 
   db.run(
@@ -189,7 +324,9 @@ app.post("/bookings", (req, res) => {
     [name, email, phone, eventType, eventDate, guestCount, notes],
     function (err) {
       if (err) {
-        return res.status(500).json({ error: "Booking could not be saved" });
+        return res.status(500).json({
+          error: "Booking could not be saved"
+        });
       }
 
       res.status(201).json({
@@ -203,7 +340,9 @@ app.post("/bookings", (req, res) => {
 app.get("/bookings", authenticateAdmin, (req, res) => {
   db.all("SELECT * FROM bookings ORDER BY createdAt DESC", [], (err, rows) => {
     if (err) {
-      return res.status(500).json({ error: "Bookings could not be loaded" });
+      return res.status(500).json({
+        error: "Bookings could not be loaded"
+      });
     }
 
     res.json(rows);
@@ -212,25 +351,58 @@ app.get("/bookings", authenticateAdmin, (req, res) => {
 
 app.put("/bookings/:id", authenticateAdmin, (req, res) => {
   const bookingId = req.params.id;
-  const { name, email, phone, eventType, eventDate, guestCount, notes } =
-    req.body;
+
+  const {
+    name,
+    email,
+    phone,
+    eventType,
+    eventDate,
+    guestCount,
+    notes,
+    status,
+    adminNotes
+  } = req.body;
 
   const sql = `
     UPDATE bookings
-    SET name = ?, email = ?, phone = ?, eventType = ?, eventDate = ?, guestCount = ?, notes = ?
+    SET name = ?,
+        email = ?,
+        phone = ?,
+        eventType = ?,
+        eventDate = ?,
+        guestCount = ?,
+        notes = ?,
+        status = ?,
+        adminNotes = ?
     WHERE id = ?
   `;
 
   db.run(
     sql,
-    [name, email, phone, eventType, eventDate, guestCount, notes, bookingId],
+    [
+      name,
+      email,
+      phone,
+      eventType,
+      eventDate,
+      guestCount,
+      notes,
+      status || "Pending",
+      adminNotes,
+      bookingId
+    ],
     function (err) {
       if (err) {
-        return res.status(500).json({ error: "Booking could not be updated" });
+        return res.status(500).json({
+          error: "Booking could not be updated"
+        });
       }
 
       if (this.changes === 0) {
-        return res.status(404).json({ error: "Booking not found" });
+        return res.status(404).json({
+          error: "Booking not found"
+        });
       }
 
       res.json({
@@ -241,16 +413,52 @@ app.put("/bookings/:id", authenticateAdmin, (req, res) => {
   );
 });
 
+app.put("/bookings/:id/status", authenticateAdmin, (req, res) => {
+  const bookingId = req.params.id;
+  const { status, adminNotes } = req.body;
+
+  const sql = `
+    UPDATE bookings
+    SET status = ?,
+        adminNotes = ?
+    WHERE id = ?
+  `;
+
+  db.run(sql, [status, adminNotes, bookingId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        error: "Booking status could not be updated"
+      });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({
+        error: "Booking not found"
+      });
+    }
+
+    res.json({
+      message: "Booking status updated successfully",
+      bookingId,
+      status
+    });
+  });
+});
+
 app.delete("/bookings/:id", authenticateAdmin, (req, res) => {
   const bookingId = req.params.id;
 
   db.run("DELETE FROM bookings WHERE id = ?", [bookingId], function (err) {
     if (err) {
-      return res.status(500).json({ error: "Booking could not be deleted" });
+      return res.status(500).json({
+        error: "Booking could not be deleted"
+      });
     }
 
     if (this.changes === 0) {
-      return res.status(404).json({ error: "Booking not found" });
+      return res.status(404).json({
+        error: "Booking not found"
+      });
     }
 
     res.json({
@@ -280,8 +488,8 @@ app.post("/performers", (req, res) => {
 
   const sql = `
     INSERT INTO performer_applications
-    (stageName, realName, email, phone, genre, socialLink, preferredDate, equipmentNeeds, bio)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (stageName, realName, email, phone, genre, socialLink, preferredDate, equipmentNeeds, bio, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pending')
   `;
 
   db.run(
@@ -395,8 +603,9 @@ app.post("/contact", (req, res) => {
   const { name, email, phone, subject, message } = req.body;
 
   const sql = `
-    INSERT INTO contact_messages (name, email, phone, subject, message)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO contact_messages
+    (name, email, phone, subject, message, status)
+    VALUES (?, ?, ?, ?, ?, 'New')
   `;
 
   db.run(sql, [name, email, phone, subject, message], function (err) {
@@ -429,6 +638,37 @@ app.get("/contact", authenticateAdmin, (req, res) => {
   );
 });
 
+app.put("/contact/:id/status", authenticateAdmin, (req, res) => {
+  const contactId = req.params.id;
+  const { status } = req.body;
+
+  const sql = `
+    UPDATE contact_messages
+    SET status = ?
+    WHERE id = ?
+  `;
+
+  db.run(sql, [status, contactId], function (err) {
+    if (err) {
+      return res.status(500).json({
+        error: "Contact status could not be updated"
+      });
+    }
+
+    if (this.changes === 0) {
+      return res.status(404).json({
+        error: "Contact message not found"
+      });
+    }
+
+    res.json({
+      message: "Contact status updated successfully",
+      contactId,
+      status
+    });
+  });
+});
+
 app.delete("/contact/:id", authenticateAdmin, (req, res) => {
   const contactId = req.params.id;
 
@@ -450,6 +690,112 @@ app.delete("/contact/:id", authenticateAdmin, (req, res) => {
       deletedContactId: contactId
     });
   });
+});
+
+/*
+|--------------------------------------------------------------------------
+| EXPORT ROUTES
+|--------------------------------------------------------------------------
+*/
+app.get("/admin/export/bookings", authenticateAdmin, (req, res) => {
+  db.all("SELECT * FROM bookings ORDER BY createdAt DESC", [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Bookings export failed"
+      });
+    }
+
+    sendCSV(res, "castle-bookings.csv", rows, [
+      "id",
+      "name",
+      "email",
+      "phone",
+      "eventType",
+      "eventDate",
+      "guestCount",
+      "notes",
+      "status",
+      "adminNotes",
+      "createdAt"
+    ]);
+  });
+});
+
+app.get("/admin/export/performers", authenticateAdmin, (req, res) => {
+  db.all(
+    "SELECT * FROM performer_applications ORDER BY createdAt DESC",
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Performers export failed"
+        });
+      }
+
+      sendCSV(res, "castle-performers.csv", rows, [
+        "id",
+        "stageName",
+        "realName",
+        "email",
+        "phone",
+        "genre",
+        "socialLink",
+        "preferredDate",
+        "equipmentNeeds",
+        "bio",
+        "status",
+        "createdAt"
+      ]);
+    }
+  );
+});
+
+app.get("/admin/export/events", authenticateAdmin, (req, res) => {
+  db.all("SELECT * FROM events ORDER BY id DESC", [], (err, rows) => {
+    if (err) {
+      return res.status(500).json({
+        error: "Events export failed"
+      });
+    }
+
+    sendCSV(res, "castle-events.csv", rows, [
+      "id",
+      "name",
+      "day",
+      "time",
+      "description",
+      "category",
+      "capacity",
+      "isFeatured",
+      "isPublished",
+      "createdAt"
+    ]);
+  });
+});
+
+app.get("/admin/export/contacts", authenticateAdmin, (req, res) => {
+  db.all(
+    "SELECT * FROM contact_messages ORDER BY createdAt DESC",
+    [],
+    (err, rows) => {
+      if (err) {
+        return res.status(500).json({
+          error: "Contacts export failed"
+        });
+      }
+
+      sendCSV(res, "castle-contact-messages.csv", rows, [
+        "id",
+        "name",
+        "email",
+        "phone",
+        "subject",
+        "message",
+        "status",
+        "createdAt"
+      ]);
+    }
+  );
 });
 
 /*

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../../api";
+import { apiFetch, downloadProtectedFile } from "../../api";
 
 function AdminBookings() {
   const [bookings, setBookings] = useState([]);
@@ -13,7 +13,9 @@ function AdminBookings() {
     eventType: "",
     eventDate: "",
     guestCount: "",
-    notes: ""
+    notes: "",
+    status: "Pending",
+    adminNotes: ""
   });
 
   function loadBookings() {
@@ -45,7 +47,9 @@ function AdminBookings() {
       eventType: "",
       eventDate: "",
       guestCount: "",
-      notes: ""
+      notes: "",
+      status: "Pending",
+      adminNotes: ""
     });
   }
 
@@ -53,13 +57,15 @@ function AdminBookings() {
     setEditingBookingId(booking.id);
 
     setFormData({
-      name: booking.name,
-      email: booking.email,
-      phone: booking.phone,
-      eventType: booking.eventType,
-      eventDate: booking.eventDate,
-      guestCount: booking.guestCount,
-      notes: booking.notes || ""
+      name: booking.name || "",
+      email: booking.email || "",
+      phone: booking.phone || "",
+      eventType: booking.eventType || "",
+      eventDate: booking.eventDate || "",
+      guestCount: booking.guestCount || "",
+      notes: booking.notes || "",
+      status: booking.status || "Pending",
+      adminNotes: booking.adminNotes || ""
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -83,6 +89,24 @@ function AdminBookings() {
       });
   }
 
+  function quickStatusUpdate(booking, status) {
+    apiFetch(`/bookings/${booking.id}/status`, {
+      method: "PUT",
+      body: JSON.stringify({
+        status,
+        adminNotes: booking.adminNotes || ""
+      })
+    })
+      .then(() => {
+        setMessage(`Booking marked as ${status}.`);
+        loadBookings();
+      })
+      .catch((err) => {
+        console.error(err);
+        setMessage("Booking status could not be updated.");
+      });
+  }
+
   function deleteBooking(id) {
     const confirmed = window.confirm("Are you sure you want to delete this booking?");
 
@@ -103,15 +127,32 @@ function AdminBookings() {
       });
   }
 
+  function exportBookings() {
+    downloadProtectedFile("/admin/export/bookings", "castle-bookings.csv").catch(
+      (err) => {
+        console.error(err);
+        setMessage("Bookings could not be exported.");
+      }
+    );
+  }
+
   return (
     <section className="admin-page">
-      <p className="eyebrow">MANAGER DASHBOARD</p>
-      <h1>Booking Requests</h1>
+      <div className="admin-header-row">
+        <div>
+          <p className="eyebrow">MANAGER DASHBOARD</p>
+          <h1>Booking Requests</h1>
+        </div>
+
+        <button className="secondary-btn" onClick={exportBookings}>
+          Export CSV
+        </button>
+      </div>
 
       {message && <p className="form-message">{message}</p>}
 
       {editingBookingId && (
-        <form className="booking-form" onSubmit={handleSubmit}>
+        <form className="booking-form pro-admin-form" onSubmit={handleSubmit}>
           <input
             name="name"
             placeholder="Customer name"
@@ -162,10 +203,24 @@ function AdminBookings() {
             required
           />
 
+          <select name="status" value={formData.status} onChange={handleChange}>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Completed">Completed</option>
+          </select>
+
           <textarea
             name="notes"
-            placeholder="Extra notes"
+            placeholder="Customer notes"
             value={formData.notes}
+            onChange={handleChange}
+          />
+
+          <textarea
+            name="adminNotes"
+            placeholder="Private manager notes"
+            value={formData.adminNotes}
             onChange={handleChange}
           />
 
@@ -182,7 +237,10 @@ function AdminBookings() {
       <div className="admin-bookings-grid admin-list-spacing">
         {bookings.map((booking) => (
           <div className="admin-booking-card" key={booking.id}>
-            <h2>{booking.name}</h2>
+            <div className="admin-card-topline">
+              <h2>{booking.name}</h2>
+              <span className="status-pill">{booking.status || "Pending"}</span>
+            </div>
 
             <p>
               <strong>Email:</strong> {booking.email}
@@ -205,7 +263,13 @@ function AdminBookings() {
             </p>
 
             <p>
-              <strong>Notes:</strong> {booking.notes || "No notes provided"}
+              <strong>Customer Notes:</strong>{" "}
+              {booking.notes || "No notes provided"}
+            </p>
+
+            <p>
+              <strong>Manager Notes:</strong>{" "}
+              {booking.adminNotes || "No manager notes yet"}
             </p>
 
             <p>
@@ -215,6 +279,27 @@ function AdminBookings() {
             <div className="admin-actions">
               <button className="accept-btn" onClick={() => editBooking(booking)}>
                 Edit
+              </button>
+
+              <button
+                className="accept-btn"
+                onClick={() => quickStatusUpdate(booking, "Confirmed")}
+              >
+                Confirm
+              </button>
+
+              <button
+                className="secondary-btn"
+                onClick={() => quickStatusUpdate(booking, "Completed")}
+              >
+                Complete
+              </button>
+
+              <button
+                className="reject-btn"
+                onClick={() => quickStatusUpdate(booking, "Rejected")}
+              >
+                Reject
               </button>
 
               <button

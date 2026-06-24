@@ -19,7 +19,7 @@ function AdminHome() {
       .then((data) => setPerformers(data))
       .catch((err) => console.error(err));
 
-    apiFetch("/events")
+    apiFetch("/admin/events")
       .then((data) => setEvents(data))
       .catch((err) => console.error(err));
 
@@ -28,9 +28,23 @@ function AdminHome() {
       .catch((err) => console.error(err));
   }, []);
 
+  const pendingBookings = bookings.filter(
+    (booking) => booking.status === "Pending" || !booking.status
+  );
+
+  const confirmedBookings = bookings.filter(
+    (booking) => booking.status === "Confirmed"
+  );
+
   const pendingPerformers = performers.filter(
     (performer) => performer.status === "Pending" || !performer.status
   );
+
+  const newMessages = contacts.filter(
+    (contact) => contact.status === "New" || !contact.status
+  );
+
+  const publishedEvents = events.filter((event) => event.isPublished === 1);
 
   function handleLogout() {
     removeAdminToken();
@@ -50,15 +64,20 @@ function AdminHome() {
         </button>
       </div>
 
-      <div className="admin-stats-grid">
+      <div className="admin-stats-grid pro-stats-grid">
         <div className="admin-stat-card">
           <h2>{bookings.length}</h2>
           <p>Total Bookings</p>
         </div>
 
         <div className="admin-stat-card">
-          <h2>{performers.length}</h2>
-          <p>Performer Applications</p>
+          <h2>{pendingBookings.length}</h2>
+          <p>Pending Bookings</p>
+        </div>
+
+        <div className="admin-stat-card">
+          <h2>{confirmedBookings.length}</h2>
+          <p>Confirmed Bookings</p>
         </div>
 
         <div className="admin-stat-card">
@@ -67,40 +86,73 @@ function AdminHome() {
         </div>
 
         <div className="admin-stat-card">
-          <h2>{events.length}</h2>
-          <p>Upcoming Events</p>
+          <h2>{newMessages.length}</h2>
+          <p>New Messages</p>
         </div>
 
         <div className="admin-stat-card">
-          <h2>{contacts.length}</h2>
-          <p>Contact Messages</p>
+          <h2>{publishedEvents.length}</h2>
+          <p>Published Events</p>
         </div>
       </div>
 
       <div className="admin-dashboard-grid">
         <Link to="/admin/bookings" className="admin-dashboard-card">
           <h2>📅 Bookings</h2>
-          <p>View customer event booking requests.</p>
+          <p>Review, edit, confirm, reject and export customer bookings.</p>
           <span>Open Bookings →</span>
         </Link>
 
         <Link to="/admin/performers" className="admin-dashboard-card">
           <h2>🎤 Performers</h2>
-          <p>Review performer applications and accept or reject artists.</p>
+          <p>Review performer applications and manage artist status.</p>
           <span>Open Performers →</span>
         </Link>
 
         <Link to="/admin/events" className="admin-dashboard-card">
           <h2>🎟️ Events</h2>
-          <p>Create, edit and delete public event listings.</p>
+          <p>Create, edit, feature, publish and export public events.</p>
           <span>Open Events →</span>
         </Link>
 
         <Link to="/admin/contacts" className="admin-dashboard-card">
           <h2>✉️ Contact</h2>
-          <p>Read and manage customer contact messages.</p>
+          <p>Read messages, track replies and export customer enquiries.</p>
           <span>Open Messages →</span>
         </Link>
+      </div>
+
+      <div className="recent-panel">
+        <h2>Recent Activity</h2>
+
+        <div className="recent-grid">
+          <div>
+            <h3>Latest Booking</h3>
+            <p>
+              {bookings[0]
+                ? `${bookings[0].name} — ${bookings[0].eventType}`
+                : "No bookings yet."}
+            </p>
+          </div>
+
+          <div>
+            <h3>Latest Performer</h3>
+            <p>
+              {performers[0]
+                ? `${performers[0].stageName} — ${performers[0].genre}`
+                : "No performer applications yet."}
+            </p>
+          </div>
+
+          <div>
+            <h3>Latest Message</h3>
+            <p>
+              {contacts[0]
+                ? `${contacts[0].name} — ${contacts[0].subject}`
+                : "No contact messages yet."}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   );

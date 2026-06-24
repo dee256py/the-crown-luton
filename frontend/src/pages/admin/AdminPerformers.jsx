@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../../api";
+import { apiFetch, downloadProtectedFile } from "../../api";
 
 function AdminPerformers() {
   const [performers, setPerformers] = useState([]);
@@ -54,21 +54,38 @@ function AdminPerformers() {
       });
   }
 
+  function exportPerformers() {
+    downloadProtectedFile(
+      "/admin/export/performers",
+      "castle-performers.csv"
+    ).catch((err) => {
+      console.error(err);
+      setMessage("Performer applications could not be exported.");
+    });
+  }
+
   return (
     <section className="admin-page">
-      <p className="eyebrow">MANAGER DASHBOARD</p>
-      <h1>Performer Applications</h1>
+      <div className="admin-header-row">
+        <div>
+          <p className="eyebrow">MANAGER DASHBOARD</p>
+          <h1>Performer Applications</h1>
+        </div>
+
+        <button className="secondary-btn" onClick={exportPerformers}>
+          Export CSV
+        </button>
+      </div>
 
       {message && <p className="form-message">{message}</p>}
 
       <div className="admin-bookings-grid">
         {performers.map((performer) => (
           <div className="admin-booking-card" key={performer.id}>
-            <h2>{performer.stageName}</h2>
-
-            <p>
-              <strong>Status:</strong> {performer.status || "Pending"}
-            </p>
+            <div className="admin-card-topline">
+              <h2>{performer.stageName}</h2>
+              <span className="status-pill">{performer.status || "Pending"}</span>
+            </div>
 
             <p>
               <strong>Real Name:</strong> {performer.realName}
@@ -87,15 +104,18 @@ function AdminPerformers() {
             </p>
 
             <p>
-              <strong>Preferred Date:</strong> {performer.preferredDate}
+              <strong>Preferred Date:</strong>{" "}
+              {performer.preferredDate || "Not provided"}
             </p>
 
             <p>
-              <strong>Social Link:</strong> {performer.socialLink || "Not provided"}
+              <strong>Social Link:</strong>{" "}
+              {performer.socialLink || "Not provided"}
             </p>
 
             <p>
-              <strong>Equipment:</strong> {performer.equipmentNeeds}
+              <strong>Equipment:</strong>{" "}
+              {performer.equipmentNeeds || "Not provided"}
             </p>
 
             <p>

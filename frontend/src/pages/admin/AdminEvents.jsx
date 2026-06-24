@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { apiFetch } from "../../api";
+import { apiFetch, downloadProtectedFile } from "../../api";
 
 function AdminEvents() {
   const [events, setEvents] = useState([]);
@@ -10,11 +10,15 @@ function AdminEvents() {
     name: "",
     day: "",
     time: "",
-    description: ""
+    description: "",
+    category: "Live Music",
+    capacity: "",
+    isFeatured: false,
+    isPublished: true
   });
 
   function loadEvents() {
-    apiFetch("/events")
+    apiFetch("/admin/events")
       .then((data) => setEvents(data))
       .catch((err) => console.error(err));
   }
@@ -24,11 +28,11 @@ function AdminEvents() {
   }, []);
 
   function handleChange(e) {
-    const { name, value } = e.target;
+    const { name, value, type, checked } = e.target;
 
     setFormData({
       ...formData,
-      [name]: value
+      [name]: type === "checkbox" ? checked : value
     });
   }
 
@@ -37,7 +41,11 @@ function AdminEvents() {
       name: "",
       day: "",
       time: "",
-      description: ""
+      description: "",
+      category: "Live Music",
+      capacity: "",
+      isFeatured: false,
+      isPublished: true
     });
 
     setEditingEventId(null);
@@ -73,10 +81,14 @@ function AdminEvents() {
     setEditingEventId(event.id);
 
     setFormData({
-      name: event.name,
-      day: event.day,
-      time: event.time,
-      description: event.description
+      name: event.name || "",
+      day: event.day || "",
+      time: event.time || "",
+      description: event.description || "",
+      category: event.category || "Live Music",
+      capacity: event.capacity || "",
+      isFeatured: event.isFeatured === 1,
+      isPublished: event.isPublished === 1
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -102,14 +114,31 @@ function AdminEvents() {
       });
   }
 
+  function exportEvents() {
+    downloadProtectedFile("/admin/export/events", "castle-events.csv").catch(
+      (err) => {
+        console.error(err);
+        setMessage("Events could not be exported.");
+      }
+    );
+  }
+
   return (
     <section className="admin-page">
-      <p className="eyebrow">MANAGER DASHBOARD</p>
-      <h1>Manage Events</h1>
+      <div className="admin-header-row">
+        <div>
+          <p className="eyebrow">MANAGER DASHBOARD</p>
+          <h1>Manage Events</h1>
+        </div>
+
+        <button className="secondary-btn" onClick={exportEvents}>
+          Export CSV
+        </button>
+      </div>
 
       {message && <p className="form-message">{message}</p>}
 
-      <form className="booking-form" onSubmit={handleSubmit}>
+      <form className="booking-form pro-admin-form" onSubmit={handleSubmit}>
         <input
           name="name"
           placeholder="Event name"
@@ -117,6 +146,20 @@ function AdminEvents() {
           onChange={handleChange}
           required
         />
+
+        <select
+          name="category"
+          value={formData.category}
+          onChange={handleChange}
+          required
+        >
+          <option value="Live Music">Live Music</option>
+          <option value="Open Mic">Open Mic</option>
+          <option value="DJ Night">DJ Night</option>
+          <option value="Community Event">Community Event</option>
+          <option value="Private Hire">Private Hire</option>
+          <option value="Special Event">Special Event</option>
+        </select>
 
         <input
           name="day"
@@ -134,6 +177,14 @@ function AdminEvents() {
           required
         />
 
+        <input
+          name="capacity"
+          type="number"
+          placeholder="Capacity"
+          value={formData.capacity}
+          onChange={handleChange}
+        />
+
         <textarea
           name="description"
           placeholder="Event description"
@@ -141,6 +192,26 @@ function AdminEvents() {
           onChange={handleChange}
           required
         />
+
+        <label className="checkbox-row">
+          <input
+            name="isFeatured"
+            type="checkbox"
+            checked={formData.isFeatured}
+            onChange={handleChange}
+          />
+          Feature this event
+        </label>
+
+        <label className="checkbox-row">
+          <input
+            name="isPublished"
+            type="checkbox"
+            checked={formData.isPublished}
+            onChange={handleChange}
+          />
+          Publish on public website
+        </label>
 
         <button className="primary-btn" type="submit">
           {editingEventId ? "Update Event" : "Create Event"}
@@ -156,7 +227,19 @@ function AdminEvents() {
       <div className="admin-bookings-grid admin-list-spacing">
         {events.map((event) => (
           <div className="admin-booking-card" key={event.id}>
-            <h2>{event.name}</h2>
+            <div className="admin-card-topline">
+              <h2>{event.name}</h2>
+
+              <span className={event.isPublished === 1 ? "status-pill" : "status-pill muted"}>
+                {event.isPublished === 1 ? "Published" : "Hidden"}
+              </span>
+            </div>
+
+            {event.isFeatured === 1 && <span className="status-pill">Featured</span>}
+
+            <p>
+              <strong>Category:</strong> {event.category || "Live Music"}
+            </p>
 
             <p>
               <strong>Day:</strong> {event.day}
@@ -164,6 +247,11 @@ function AdminEvents() {
 
             <p>
               <strong>Time:</strong> {event.time}
+            </p>
+
+            <p>
+              <strong>Capacity:</strong>{" "}
+              {Number(event.capacity) > 0 ? event.capacity : "Not set"}
             </p>
 
             <p>

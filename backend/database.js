@@ -1,10 +1,17 @@
-// Import packages
 require("dotenv").config();
+
 const sqlite3 = require("sqlite3").verbose();
 const bcrypt = require("bcryptjs");
 
-// Create/connect to database file
 const db = new sqlite3.Database("./crown.db");
+
+function addColumnIfMissing(tableName, columnSql) {
+  db.run(`ALTER TABLE ${tableName} ADD COLUMN ${columnSql}`, (err) => {
+    if (err && !err.message.includes("duplicate column name")) {
+      console.error(`Could not add column to ${tableName}:`, err.message);
+    }
+  });
+}
 
 db.serialize(() => {
   /*
@@ -22,9 +29,14 @@ db.serialize(() => {
       eventDate TEXT NOT NULL,
       guestCount INTEGER NOT NULL,
       notes TEXT,
+      status TEXT DEFAULT 'Pending',
+      adminNotes TEXT,
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  addColumnIfMissing("bookings", "status TEXT DEFAULT 'Pending'");
+  addColumnIfMissing("bookings", "adminNotes TEXT");
 
   /*
   |--------------------------------------------------------------------------
@@ -48,18 +60,7 @@ db.serialize(() => {
     )
   `);
 
-  // Adds status column to older performer tables if missing
-  db.run(
-    `
-    ALTER TABLE performer_applications
-    ADD COLUMN status TEXT DEFAULT 'Pending'
-  `,
-    (err) => {
-      if (err && !err.message.includes("duplicate column name")) {
-        console.error(err.message);
-      }
-    }
-  );
+  addColumnIfMissing("performer_applications", "status TEXT DEFAULT 'Pending'");
 
   /*
   |--------------------------------------------------------------------------
@@ -73,9 +74,18 @@ db.serialize(() => {
       day TEXT NOT NULL,
       time TEXT NOT NULL,
       description TEXT NOT NULL,
+      category TEXT DEFAULT 'Live Music',
+      capacity INTEGER DEFAULT 0,
+      isFeatured INTEGER DEFAULT 0,
+      isPublished INTEGER DEFAULT 1,
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  addColumnIfMissing("events", "category TEXT DEFAULT 'Live Music'");
+  addColumnIfMissing("events", "capacity INTEGER DEFAULT 0");
+  addColumnIfMissing("events", "isFeatured INTEGER DEFAULT 0");
+  addColumnIfMissing("events", "isPublished INTEGER DEFAULT 1");
 
   /*
   |--------------------------------------------------------------------------
@@ -90,9 +100,12 @@ db.serialize(() => {
       phone TEXT,
       subject TEXT NOT NULL,
       message TEXT NOT NULL,
+      status TEXT DEFAULT 'New',
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  addColumnIfMissing("contact_messages", "status TEXT DEFAULT 'New'");
 
   /*
   |--------------------------------------------------------------------------
@@ -108,7 +121,6 @@ db.serialize(() => {
     )
   `);
 
-  // Create one default admin account if none exists
   db.get("SELECT COUNT(*) AS count FROM admin_users", [], (err, row) => {
     if (err) {
       console.error("Could not check admin users:", err.message);
