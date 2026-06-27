@@ -4,6 +4,8 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import ScrollToTop from "./components/ScrollToTop";
+import ScrollProgress from "./components/ScrollProgress";
 
 import Home from "./pages/Home";
 import Events from "./pages/Events";
@@ -23,6 +25,9 @@ import AdminContacts from "./pages/admin/AdminContacts";
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <ScrollProgress />
+
       <main className="site">
         <Navbar />
 
