@@ -1,18 +1,71 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { NavLink } from "react-router-dom";
 
 function Navbar() {
-  return (
-    <nav className="navbar">
-      <h2>THE CASTLE</h2>
+  const [menuOpen, setMenuOpen] = useState(false);
 
-      <div className="nav-links">
-        <Link to="/">Home</Link>
-        <Link to="/events">Events</Link>
-        <Link to="/book-event">Bookings</Link>
-        <Link to="/perform">Perform Here</Link>
-        <Link to="/contact">Contact</Link>
-      </div>
-    </nav>
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
+  return (
+    <header className="navbar">
+      <NavLink className="navbar-logo" to="/" onClick={closeMenu}>
+        THE CASTLE
+      </NavLink>
+
+      <button
+        className="mobile-menu-btn"
+        type="button"
+        onClick={() => setMenuOpen(!menuOpen)}
+        aria-label="Toggle navigation menu"
+      >
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav className={menuOpen ? "nav-links nav-links-open" : "nav-links"}>
+        <NavLink
+          to="/"
+          onClick={closeMenu}
+          className={({ isActive }) => (isActive ? "active-nav-link" : "")}
+        >
+          Home
+        </NavLink>
+
+        <NavLink
+          to="/events"
+          onClick={closeMenu}
+          className={({ isActive }) => (isActive ? "active-nav-link" : "")}
+        >
+          Events
+        </NavLink>
+
+        <NavLink
+          to="/book-event"
+          onClick={closeMenu}
+          className={({ isActive }) => (isActive ? "active-nav-link" : "")}
+        >
+          Bookings
+        </NavLink>
+
+        <NavLink
+          to="/perform"
+          onClick={closeMenu}
+          className={({ isActive }) => (isActive ? "active-nav-link" : "")}
+        >
+          Perform Here
+        </NavLink>
+
+        <NavLink
+          to="/contact"
+          onClick={closeMenu}
+          className={({ isActive }) => (isActive ? "active-nav-link" : "")}
+        >
+          Contact
+        </NavLink>
+      </nav>
+    </header>
   );
 }
 

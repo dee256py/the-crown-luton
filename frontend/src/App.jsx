@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
@@ -10,6 +11,7 @@ import EventDetails from "./pages/EventDetails";
 import BookEvent from "./pages/BookEvent";
 import PerformHere from "./pages/PerformHere";
 import Contact from "./pages/Contact";
+import NotFound from "./pages/NotFound";
 
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminHome from "./pages/admin/AdminHome";
@@ -78,7 +80,11 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="*" element={<NotFound />} />
         </Routes>
+
+        <Footer />
       </main>
     </BrowserRouter>
   );
