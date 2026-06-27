@@ -1257,3 +1257,897 @@ select {
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================
+   LUXURY EVENTS PAGE
+========================================================= */
+
+.lux-events-page {
+  padding: 100px 7vw 120px;
+  overflow: hidden;
+  animation: pageFadeUp 0.55s ease both;
+}
+
+.lux-events-hero {
+  max-width: 1050px;
+  margin-bottom: 70px;
+}
+
+.lux-events-hero h1 {
+  font-size: clamp(4rem, 10vw, 9rem);
+  line-height: 0.88;
+  letter-spacing: -0.085em;
+  margin: 18px 0 28px;
+  color: transparent;
+  background: linear-gradient(135deg, #ffffff, #f7e2a0 55%, #9c6b24);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.lux-events-hero p {
+  max-width: 760px;
+  color: var(--castle-text);
+  font-size: 1.18rem;
+  line-height: 1.8;
+}
+
+/* Featured event */
+
+.lux-featured-event {
+  min-height: 470px;
+  display: grid;
+  grid-template-columns: 1fr 0.45fr;
+  gap: 40px;
+  align-items: center;
+  margin-bottom: 90px;
+  padding: 56px;
+  border-radius: 48px;
+  border: 1px solid rgba(247, 226, 160, 0.24);
+  background:
+    radial-gradient(circle at top right, rgba(247, 226, 160, 0.2), transparent 35%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.085), transparent),
+    rgba(10, 10, 12, 0.86);
+  box-shadow: var(--shadow-heavy);
+  position: relative;
+  overflow: hidden;
+}
+
+.lux-featured-event h2 {
+  font-size: clamp(3rem, 7vw, 7rem);
+  line-height: 0.88;
+  letter-spacing: -0.08em;
+  margin: 18px 0 22px;
+}
+
+.lux-featured-event p {
+  color: var(--castle-text);
+  max-width: 760px;
+  line-height: 1.8;
+  font-size: 1.08rem;
+}
+
+.lux-event-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 28px 0;
+}
+
+.lux-event-meta span {
+  padding: 11px 16px;
+  border-radius: 999px;
+  background: rgba(247, 226, 160, 0.1);
+  border: 1px solid rgba(247, 226, 160, 0.2);
+  color: var(--castle-gold);
+  font-weight: 900;
+}
+
+.lux-featured-orb {
+  width: min(320px, 70vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  justify-self: center;
+  border: 1px solid rgba(247, 226, 160, 0.25);
+  background:
+    radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.2), transparent 30%),
+    radial-gradient(circle, rgba(247, 226, 160, 0.22), transparent 68%);
+  box-shadow: 0 30px 100px rgba(247, 226, 160, 0.08);
+  animation: orbFloat 7s ease-in-out infinite alternate;
+}
+
+.lux-featured-orb span {
+  color: var(--castle-gold);
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+}
+
+/* Browse section */
+
+.lux-events-toolbar {
+  display: grid;
+  grid-template-columns: 0.7fr 1.3fr;
+  gap: 40px;
+  align-items: end;
+  margin-bottom: 38px;
+}
+
+.lux-events-toolbar h2 {
+  font-size: clamp(2rem, 4vw, 4rem);
+  line-height: 0.95;
+  letter-spacing: -0.065em;
+  margin: 10px 0 0;
+}
+
+.lux-events-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.lux-event-card {
+  min-height: 430px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 34px;
+  border-radius: 34px;
+  border: 1px solid rgba(247, 226, 160, 0.16);
+  background:
+    linear-gradient(145deg, rgba(247, 226, 160, 0.08), transparent),
+    rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.lux-event-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: rgba(247, 226, 160, 0.38);
+  box-shadow: var(--shadow-soft);
+}
+
+.lux-event-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.lux-event-card-top span {
+  color: var(--castle-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.lux-event-card h2 {
+  font-size: clamp(2rem, 3vw, 3rem);
+  line-height: 0.95;
+  letter-spacing: -0.065em;
+  margin: 0 0 16px;
+}
+
+.lux-event-card p {
+  color: var(--castle-text);
+  line-height: 1.7;
+}
+
+.lux-event-date {
+  color: var(--castle-gold) !important;
+  font-weight: 900;
+}
+
+/* Loading and empty states */
+
+.lux-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.lux-skeleton-card {
+  min-height: 430px;
+  border-radius: 34px;
+  background:
+    linear-gradient(
+      110deg,
+      rgba(255, 255, 255, 0.04) 8%,
+      rgba(247, 226, 160, 0.1) 18%,
+      rgba(255, 255, 255, 0.04) 33%
+    ),
+    rgba(10, 10, 12, 0.82);
+  background-size: 200% 100%;
+  border: 1px solid rgba(247, 226, 160, 0.12);
+  animation: skeletonGlow 1.35s ease-in-out infinite;
+}
+
+@keyframes skeletonGlow {
+  to {
+    background-position-x: -200%;
+  }
+}
+
+.lux-empty-public {
+  max-width: 860px;
+  margin: 40px auto;
+  padding: 56px;
+  border-radius: 40px;
+  text-align: center;
+  border: 1px solid rgba(247, 226, 160, 0.2);
+  background:
+    linear-gradient(145deg, rgba(247, 226, 160, 0.08), transparent),
+    rgba(10, 10, 12, 0.82);
+  box-shadow: var(--shadow-soft);
+}
+
+.lux-empty-public h2 {
+  font-size: clamp(2.5rem, 5vw, 5rem);
+  line-height: 0.95;
+  letter-spacing: -0.075em;
+  margin: 16px 0;
+}
+
+.lux-empty-public p {
+  color: var(--castle-text);
+  line-height: 1.8;
+}
+
+/* Mobile */
+
+@media (max-width: 1050px) {
+  .lux-featured-event,
+  .lux-events-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .lux-events-grid,
+  .lux-skeleton-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lux-featured-orb {
+    width: min(260px, 70vw);
+  }
+}
+
+@media (max-width: 680px) {
+  .lux-events-page {
+    padding: 80px 6vw;
+  }
+
+  .lux-featured-event,
+  .lux-empty-public {
+    padding: 34px;
+    border-radius: 34px;
+  }
+
+  .lux-events-hero h1 {
+    font-size: clamp(3.3rem, 16vw, 5.4rem);
+  }
+}
+
+/* =========================================================
+   LUXURY EVENT DETAILS PAGE
+========================================================= */
+
+.lux-event-details-page {
+  padding: 90px 7vw 120px;
+  animation: pageFadeUp 0.55s ease both;
+}
+
+.lux-event-details-hero {
+  min-height: 620px;
+  display: grid;
+  grid-template-columns: 1.05fr 0.8fr;
+  gap: 46px;
+  align-items: center;
+
+  padding: 64px;
+  border-radius: 52px;
+  border: 1px solid rgba(247, 226, 160, 0.22);
+
+  background:
+    radial-gradient(circle at top right, rgba(247, 226, 160, 0.18), transparent 36%),
+    radial-gradient(circle at bottom left, rgba(120, 60, 255, 0.12), transparent 34%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent),
+    rgba(10, 10, 12, 0.86);
+
+  box-shadow: var(--shadow-heavy);
+  overflow: hidden;
+  position: relative;
+}
+
+.lux-event-details-hero::before {
+  content: "";
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  right: -120px;
+  top: -120px;
+  background: radial-gradient(circle, rgba(247, 226, 160, 0.18), transparent 68%);
+  pointer-events: none;
+  animation: slowGlow 8s ease-in-out infinite alternate;
+}
+
+.lux-event-details-copy {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
+
+.lux-event-details-copy .status-pill {
+  margin-bottom: 18px;
+}
+
+.lux-event-details-copy .eyebrow {
+  margin-top: 18px;
+}
+
+.lux-event-details-copy h1 {
+  font-size: clamp(4rem, 9vw, 8.8rem);
+  line-height: 0.86;
+  letter-spacing: -0.085em;
+  margin: 20px auto 28px;
+
+  color: transparent;
+  background: linear-gradient(135deg, #ffffff, #f7e2a0 56%, #9c6b24);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.lux-event-details-copy p {
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--castle-text);
+  line-height: 1.8;
+  font-size: 1.12rem;
+}
+
+.lux-detail-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 34px;
+}
+
+.lux-detail-panel {
+  position: relative;
+  z-index: 2;
+
+  padding: 30px;
+  border-radius: 36px;
+  border: 1px solid rgba(247, 226, 160, 0.18);
+
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent),
+    rgba(0, 0, 0, 0.26);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.3);
+}
+
+.lux-detail-panel .eyebrow {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.lux-detail-panel .preview-row {
+  margin-bottom: 14px;
+}
+
+.lux-detail-panel .preview-row:last-child {
+  margin-bottom: 0;
+}
+
+.lux-bottom-nav {
+  display: flex;
+  justify-content: center;
+  margin-top: 38px;
+}
+
+@media (max-width: 1050px) {
+  .lux-event-details-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .lux-detail-panel {
+    max-width: 760px;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .lux-event-details-page {
+    padding: 80px 6vw;
+  }
+
+  .lux-event-details-hero {
+    padding: 34px;
+    border-radius: 34px;
+  }
+
+  .lux-event-details-copy h1 {
+    font-size: clamp(3.3rem, 16vw, 5.4rem);
+  }
+
+  .lux-detail-actions {
+    flex-direction: column;
+  }
+
+  .lux-detail-actions a {
+    width: 100%;
+  }
+}
+
+/* =========================================================
+   LUXURY BOOKING PAGE
+========================================================= */
+
+.lux-booking-page {
+  padding: 100px 7vw 120px;
+  overflow: hidden;
+  animation: pageFadeUp 0.55s ease both;
+}
+
+.lux-booking-hero {
+  max-width: 1100px;
+  margin-bottom: 70px;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.lux-booking-hero h1 {
+  font-size: clamp(4rem, 10vw, 8.8rem);
+  line-height: 0.88;
+  letter-spacing: -0.085em;
+  margin: 18px 0 28px;
+  color: transparent;
+  background: linear-gradient(135deg, #ffffff, #f7e2a0 55%, #9c6b24);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.lux-booking-hero p {
+  max-width: 820px;
+  margin: 0 auto;
+  color: var(--castle-text);
+  font-size: 1.18rem;
+  line-height: 1.8;
+}
+
+.lux-booking-layout {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 34px;
+  align-items: start;
+}
+
+.lux-booking-panel {
+  padding: 44px;
+  border-radius: 44px;
+  border: 1px solid rgba(247, 226, 160, 0.22);
+  background:
+    radial-gradient(circle at top right, rgba(247, 226, 160, 0.12), transparent 36%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent),
+    rgba(10, 10, 12, 0.86);
+  box-shadow: var(--shadow-heavy);
+}
+
+.lux-booking-panel .eyebrow {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.lux-booking-form {
+  max-width: 100%;
+}
+
+.lux-booking-form input,
+.lux-booking-form textarea {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.025)),
+    rgba(0, 0, 0, 0.32);
+}
+
+.lux-booking-form button {
+  margin-top: 8px;
+  min-height: 62px;
+  font-size: 1rem;
+}
+
+.lux-booking-form button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.lux-booking-sidebar {
+  display: grid;
+  gap: 20px;
+  position: sticky;
+  top: 120px;
+}
+
+.lux-booking-info-card {
+  min-height: 190px;
+  padding: 30px;
+  border-radius: 32px;
+  border: 1px solid rgba(247, 226, 160, 0.16);
+  background:
+    linear-gradient(145deg, rgba(247, 226, 160, 0.08), transparent),
+    rgba(10, 10, 12, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.lux-booking-info-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(247, 226, 160, 0.34);
+  box-shadow: var(--shadow-soft);
+}
+
+.lux-booking-info-card span {
+  display: inline-block;
+  color: var(--castle-gold);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  margin-bottom: 18px;
+}
+
+.lux-booking-info-card h3 {
+  font-size: 2rem;
+  line-height: 0.95;
+  letter-spacing: -0.055em;
+  margin: 0 0 16px;
+}
+
+.lux-booking-info-card p {
+  color: var(--castle-text);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.lux-success-card {
+  margin-top: 28px;
+  padding: 34px;
+  border-radius: 32px;
+  text-align: center;
+  border: 1px solid rgba(247, 226, 160, 0.22);
+  background:
+    radial-gradient(circle at top, rgba(247, 226, 160, 0.14), transparent 42%),
+    rgba(255, 255, 255, 0.045);
+  animation: pageFadeUp 0.45s ease both;
+}
+
+.lux-success-card h2 {
+  font-size: clamp(2rem, 4vw, 3.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.065em;
+  margin: 14px 0;
+}
+
+.lux-success-card p {
+  color: var(--castle-text);
+  line-height: 1.7;
+}
+
+.lux-success-card strong {
+  color: var(--castle-gold);
+}
+
+@media (max-width: 1050px) {
+  .lux-booking-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .lux-booking-sidebar {
+    position: static;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .lux-booking-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .lux-booking-page {
+    padding: 80px 6vw;
+  }
+
+  .lux-booking-hero h1 {
+    font-size: clamp(3.3rem, 16vw, 5.3rem);
+  }
+
+  .lux-booking-panel {
+    padding: 30px;
+    border-radius: 34px;
+  }
+
+  .lux-success-card {
+    padding: 28px;
+  }
+}
+
+/* =========================================================
+   LUXURY PERFORM HERE PAGE
+========================================================= */
+
+.lux-perform-page {
+  padding: 100px 7vw 120px;
+  overflow: hidden;
+  animation: pageFadeUp 0.55s ease both;
+}
+
+.lux-perform-hero {
+  max-width: 1120px;
+  margin: 0 auto 70px;
+  text-align: center;
+  position: relative;
+}
+
+.lux-perform-hero::before {
+  content: "";
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(247, 226, 160, 0.16), transparent 65%);
+  top: -260px;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  animation: slowGlow 8s ease-in-out infinite alternate;
+}
+
+.lux-perform-hero h1 {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(4rem, 10vw, 8.8rem);
+  line-height: 0.88;
+  letter-spacing: -0.085em;
+  margin: 18px 0 28px;
+  color: transparent;
+  background: linear-gradient(135deg, #ffffff, #f7e2a0 55%, #9c6b24);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.lux-perform-hero p {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+  margin: 0 auto;
+  color: var(--castle-text);
+  font-size: 1.18rem;
+  line-height: 1.8;
+}
+
+.lux-perform-page .lux-booking-panel {
+  position: relative;
+}
+
+.lux-perform-page .lux-booking-panel::before {
+  content: "LIVE";
+  position: absolute;
+  right: 34px;
+  top: 30px;
+  color: rgba(247, 226, 160, 0.08);
+  font-size: clamp(4rem, 9vw, 8rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
+
+.lux-perform-page .lux-booking-form textarea[name="bio"] {
+  min-height: 190px;
+}
+
+.lux-perform-page .lux-booking-info-card:nth-child(1) {
+  transform: translateY(0);
+}
+
+.lux-perform-page .lux-booking-info-card:nth-child(2) {
+  transform: translateY(18px);
+}
+
+.lux-perform-page .lux-booking-info-card:nth-child(3) {
+  transform: translateY(36px);
+}
+
+.lux-perform-page .lux-booking-info-card:hover {
+  transform: translateY(-4px) scale(1.01);
+}
+
+@media (max-width: 1050px) {
+  .lux-perform-page .lux-booking-info-card:nth-child(1),
+  .lux-perform-page .lux-booking-info-card:nth-child(2),
+  .lux-perform-page .lux-booking-info-card:nth-child(3) {
+    transform: none;
+  }
+}
+
+@media (max-width: 680px) {
+  .lux-perform-page {
+    padding: 80px 6vw;
+  }
+
+  .lux-perform-hero h1 {
+    font-size: clamp(3.3rem, 16vw, 5.3rem);
+  }
+
+  .lux-perform-page .lux-booking-panel::before {
+    display: none;
+  }
+}
+
+/* =========================================================
+   LUXURY CONTACT PAGE
+========================================================= */
+
+.lux-contact-page {
+  padding: 100px 7vw 120px;
+  overflow: hidden;
+  animation: pageFadeUp 0.55s ease both;
+}
+
+.lux-contact-hero {
+  max-width: 1120px;
+  margin: 0 auto 70px;
+  text-align: center;
+  position: relative;
+}
+
+.lux-contact-hero::before {
+  content: "";
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(247, 226, 160, 0.15), transparent 65%);
+  top: -260px;
+  right: -140px;
+  pointer-events: none;
+  animation: slowGlow 8s ease-in-out infinite alternate;
+}
+
+.lux-contact-hero h1 {
+  position: relative;
+  z-index: 2;
+  font-size: clamp(4rem, 10vw, 8.8rem);
+  line-height: 0.88;
+  letter-spacing: -0.085em;
+  margin: 18px 0 28px;
+  color: transparent;
+  background: linear-gradient(135deg, #ffffff, #f7e2a0 55%, #9c6b24);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.lux-contact-hero p {
+  position: relative;
+  z-index: 2;
+  max-width: 820px;
+  margin: 0 auto;
+  color: var(--castle-text);
+  font-size: 1.18rem;
+  line-height: 1.8;
+}
+
+.lux-contact-sidebar {
+  display: grid;
+  gap: 20px;
+  position: sticky;
+  top: 120px;
+}
+
+.lux-contact-card {
+  min-height: 205px;
+  padding: 32px;
+  border-radius: 34px;
+  border: 1px solid rgba(247, 226, 160, 0.16);
+  background:
+    linear-gradient(145deg, rgba(247, 226, 160, 0.08), transparent),
+    rgba(10, 10, 12, 0.78);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.lux-contact-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(247, 226, 160, 0.34);
+  box-shadow: var(--shadow-soft);
+}
+
+.lux-contact-card span {
+  display: inline-block;
+  color: var(--castle-gold);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  margin-bottom: 18px;
+}
+
+.lux-contact-card h3 {
+  font-size: 2.15rem;
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+  margin: 0 0 16px;
+}
+
+.lux-contact-card p {
+  color: var(--castle-text);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.lux-contact-page .lux-booking-panel {
+  position: relative;
+}
+
+.lux-contact-page .lux-booking-panel::before {
+  content: "HELLO";
+  position: absolute;
+  right: 34px;
+  top: 30px;
+  color: rgba(247, 226, 160, 0.07);
+  font-size: clamp(3.8rem, 8vw, 7.5rem);
+  font-weight: 900;
+  letter-spacing: -0.08em;
+  pointer-events: none;
+}
+
+.lux-contact-page .lux-booking-form textarea {
+  min-height: 210px;
+}
+
+@media (max-width: 1050px) {
+  .lux-contact-sidebar {
+    position: static;
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
+  .lux-contact-sidebar {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .lux-contact-page {
+    padding: 80px 6vw;
+  }
+
+  .lux-contact-hero h1 {
+    font-size: clamp(3.3rem, 16vw, 5.3rem);
+  }
+
+  .lux-contact-page .lux-booking-panel::before {
+    display: none;
+  }
+}

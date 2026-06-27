@@ -28,61 +28,83 @@ function EventDetails() {
 
   if (message) {
     return (
-      <section className="booking-page">
-        <p className="form-message">{message}</p>
+      <section className="lux-event-details-page">
+        <div className="lux-empty-public">
+          <p className="eyebrow">EVENT DETAILS</p>
+          <h2>{message}</h2>
 
-        <Link className="secondary-btn" to="/events">
-          Back to Events
-        </Link>
-      </section>
-    );
-  }
-
-  if (!event) {
-    return (
-      <section className="booking-page">
-        <p className="form-message">Event not found.</p>
-
-        <Link className="secondary-btn" to="/events">
-          Back to Events
-        </Link>
+          <Link className="secondary-btn" to="/events">
+            Back to Events
+          </Link>
+        </div>
       </section>
     );
   }
 
   return (
-    <section className="event-details-page">
-      <Link className="secondary-btn" to="/events">
-        ← Back to Events
-      </Link>
+    <section className="lux-event-details-page">
+      <div className="lux-event-details-hero">
+        <div className="lux-event-details-copy">
+          {event.isFeatured === 1 && (
+            <span className="status-pill">Featured Event</span>
+          )}
 
-      <div className="event-details-card">
-        {event.isFeatured === 1 && <span className="status-pill">Featured</span>}
+          <p className="eyebrow">{event.category || "LIVE EVENT"}</p>
 
-        <p className="eyebrow">{event.category || "LIVE EVENT"}</p>
+          <h1>{event.name}</h1>
 
-        <h1>{event.name}</h1>
+          <p>{event.description}</p>
 
-        <div className="event-detail-meta">
-          <span>{event.day}</span>
-          <span>{event.time}</span>
-          {Number(event.capacity) > 0 && <span>{event.capacity} capacity</span>}
+          <div className="lux-detail-actions">
+            <Link
+              className="primary-btn"
+              to={`/book-event?event=${encodeURIComponent(event.name)}`}
+            >
+              Book This Event
+            </Link>
+
+            <Link className="secondary-btn" to="/perform">
+              Apply to Perform
+            </Link>
+          </div>
         </div>
 
-        <p>{event.description}</p>
+        <div className="lux-detail-panel">
+          <p className="eyebrow">EVENT SUMMARY</p>
 
-        <div className="event-card-actions">
-          <Link
-            className="primary-btn"
-            to={`/book-event?event=${encodeURIComponent(event.name)}`}
-          >
-            Book This Event
-          </Link>
+          <div className="preview-row">
+            <span>Category</span>
+            <strong>{event.category || "Live Music"}</strong>
+          </div>
 
-          <Link className="secondary-btn" to="/perform">
-            Apply to Perform
-          </Link>
+          <div className="preview-row">
+            <span>Day</span>
+            <strong>{event.day}</strong>
+          </div>
+
+          <div className="preview-row">
+            <span>Time</span>
+            <strong>{event.time}</strong>
+          </div>
+
+          <div className="preview-row">
+            <span>Status</span>
+            <strong>{event.isFeatured === 1 ? "Featured" : "Published"}</strong>
+          </div>
+
+          {Number(event.capacity) > 0 && (
+            <div className="preview-row">
+              <span>Capacity</span>
+              <strong>{event.capacity} guests</strong>
+            </div>
+          )}
         </div>
+      </div>
+
+      <div className="lux-bottom-nav">
+        <Link className="secondary-btn" to="/events">
+          ← Back to Events
+        </Link>
       </div>
     </section>
   );
