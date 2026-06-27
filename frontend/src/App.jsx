@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import ScrollProgress from "./components/ScrollProgress";
 import BackToTopButton from "./components/BackToTopButton";
+import RevealOnScroll from "./components/RevealOnScroll";
 
 import Home from "./pages/Home";
 import Events from "./pages/Events";
@@ -29,6 +30,7 @@ function App() {
       <ScrollToTop />
       <ScrollProgress />
       <BackToTopButton />
+      <RevealOnScroll />
 
       <main className="site">
         <Navbar />
