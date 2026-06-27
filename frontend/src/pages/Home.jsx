@@ -100,6 +100,46 @@ function Home() {
         </div>
       </div>
 
+      <div className="lux-experience-section">
+        <div className="lux-experience-heading">
+          <p className="eyebrow">MADE FOR THE WHOLE NIGHT</p>
+          <h2>From first enquiry to final encore.</h2>
+          <p>
+            The Castle platform is designed for the full venue experience:
+            customers, artists and managers all have a smoother way to connect.
+          </p>
+        </div>
+
+        <div className="lux-experience-grid">
+          <div className="lux-experience-card">
+            <span>Private Hire</span>
+            <h3>Celebrations with structure.</h3>
+            <p>
+              Birthdays, graduations, community nights and private events can be
+              requested through one polished booking flow.
+            </p>
+          </div>
+
+          <div className="lux-experience-card">
+            <span>Artists</span>
+            <h3>A proper stage pathway.</h3>
+            <p>
+              Performers can send their sound, links, bio and setup needs
+              directly to the team without messy DMs.
+            </p>
+          </div>
+
+          <div className="lux-experience-card">
+            <span>Managers</span>
+            <h3>Everything stays organised.</h3>
+            <p>
+              Bookings, events, performers and contact messages are managed from
+              a secure dashboard with filters, statuses and exports.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="lux-split-section">
         <div>
           <p className="eyebrow">MANAGER DASHBOARD</p>

@@ -2738,3 +2738,131 @@ select {
     transition: none;
   }
 }
+
+/* =========================================================
+   HOMEPAGE EXPERIENCE / TRUST SECTION
+========================================================= */
+
+.lux-experience-section {
+  padding: 110px 7vw;
+  position: relative;
+  overflow: hidden;
+  border-top: 1px solid rgba(247, 226, 160, 0.1);
+}
+
+.lux-experience-section::before {
+  content: "";
+  position: absolute;
+  width: 620px;
+  height: 620px;
+  border-radius: 50%;
+  right: -220px;
+  top: 60px;
+  background: radial-gradient(circle, rgba(247, 226, 160, 0.13), transparent 65%);
+  pointer-events: none;
+  animation: slowGlow 8s ease-in-out infinite alternate;
+}
+
+.lux-experience-heading {
+  max-width: 1050px;
+  margin-bottom: 56px;
+  position: relative;
+  z-index: 2;
+}
+
+.lux-experience-heading h2 {
+  font-size: clamp(3rem, 7vw, 7rem);
+  line-height: 0.9;
+  letter-spacing: -0.08em;
+  margin: 18px 0 24px;
+
+  color: transparent;
+  background: linear-gradient(135deg, #ffffff, #f7e2a0 55%, #9c6b24);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.lux-experience-heading p {
+  max-width: 780px;
+  color: var(--castle-text);
+  line-height: 1.8;
+  font-size: 1.12rem;
+}
+
+.lux-experience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 26px;
+  position: relative;
+  z-index: 2;
+}
+
+.lux-experience-card {
+  min-height: 350px;
+  padding: 34px;
+  border-radius: 36px;
+  border: 1px solid rgba(247, 226, 160, 0.16);
+  background:
+    linear-gradient(145deg, rgba(247, 226, 160, 0.08), transparent),
+    rgba(10, 10, 12, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  transition:
+    transform 0.28s ease,
+    border-color 0.28s ease,
+    box-shadow 0.28s ease;
+}
+
+.lux-experience-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  border-color: rgba(247, 226, 160, 0.36);
+  box-shadow: var(--shadow-soft);
+}
+
+.lux-experience-card span {
+  display: inline-block;
+  color: var(--castle-gold);
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  margin-bottom: 24px;
+}
+
+.lux-experience-card h3 {
+  font-size: clamp(2.1rem, 3.5vw, 3.4rem);
+  line-height: 0.92;
+  letter-spacing: -0.07em;
+  margin: 0 0 20px;
+}
+
+.lux-experience-card p {
+  color: var(--castle-text);
+  line-height: 1.75;
+  margin: 0;
+}
+
+@media (max-width: 1050px) {
+  .lux-experience-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lux-experience-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .lux-experience-section {
+    padding: 80px 6vw;
+  }
+
+  .lux-experience-heading h2 {
+    font-size: clamp(3.2rem, 15vw, 5.2rem);
+  }
+
+  .lux-experience-card {
+    padding: 30px;
+    border-radius: 32px;
+  }
+}
