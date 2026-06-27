@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import "./App.css";
 
 import Navbar from "./components/Navbar";
@@ -24,9 +24,12 @@ import AdminPerformers from "./pages/admin/AdminPerformers";
 import AdminEvents from "./pages/admin/AdminEvents";
 import AdminContacts from "./pages/admin/AdminContacts";
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const isAdminPage = location.pathname.startsWith("/admin");
+
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
       <ScrollProgress />
       <BackToTopButton />
@@ -93,8 +96,16 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
 
-        <Footer />
+        {!isAdminPage && <Footer />}
       </main>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }
