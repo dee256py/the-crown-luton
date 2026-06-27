@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ScrollToTop from "./components/ScrollToTop";
 import ScrollProgress from "./components/ScrollProgress";
+import BackToTopButton from "./components/BackToTopButton";
 
 import Home from "./pages/Home";
 import Events from "./pages/Events";
@@ -27,6 +28,7 @@ function App() {
     <BrowserRouter>
       <ScrollToTop />
       <ScrollProgress />
+      <BackToTopButton />
 
       <main className="site">
         <Navbar />
