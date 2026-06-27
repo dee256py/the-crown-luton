@@ -2151,3 +2151,66 @@ select {
     display: none;
   }
 }
+
+/* =========================================================
+   HOMEPAGE STAGGERED SLIDE-IN ANIMATION
+========================================================= */
+
+.lux-hero-copy .eyebrow,
+.lux-hero-copy h1,
+.lux-hero-copy .lux-hero-text,
+.lux-hero-copy .lux-hero-actions {
+  opacity: 0;
+  animation: luxurySlideIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.lux-hero-copy .eyebrow {
+  animation-delay: 0.12s;
+}
+
+.lux-hero-copy h1 {
+  animation-delay: 0.28s;
+}
+
+.lux-hero-copy .lux-hero-text {
+  animation-delay: 0.46s;
+}
+
+.lux-hero-copy .lux-hero-actions {
+  animation-delay: 0.64s;
+}
+
+@keyframes luxurySlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-48px) translateY(14px);
+    filter: blur(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* Make the right-side floating cards enter more cinematically too */
+
+.lux-hero-visual {
+  opacity: 0;
+  animation: luxuryVisualReveal 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s forwards;
+}
+
+@keyframes luxuryVisualReveal {
+  from {
+    opacity: 0;
+    transform: translateX(55px) scale(0.96);
+    filter: blur(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
